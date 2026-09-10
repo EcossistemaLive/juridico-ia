@@ -1,0 +1,116 @@
+rules_version = '2';
+
+/**
+ * Regras do produto jurídico.
+ *
+ * Diferença estrutural em relação ao RecrutaAI: o dado não é isolado por
+ * usuário, e sim por ESCRITÓRIO — vários advogados compartilham os mesmos casos.
+ * E não existe master admin lendo caso de cliente: material coberto por sigilo
+ * profissional não é acessível a quem não pertence ao escritório, nem ao
+ * administrador da plataforma.
+ *
+ * Papel e escritório vêm de custom claims, definidas pelo Admin SDK no servidor.
+ * Nunca de campo gravado pelo próprio usuário.
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function claims() {
+      return request.auth.token;
+    }
+
+    function meuEscritorio() {
+      return autenticado() ? claims().escritorioId : null;
+    }
+
+    function doEscritorio() {
+      return autenticado()
+        && resource.data.escritorioId != null
+        && resource.data.escritorioId == meuEscritorio();
+    }
+
+    function criandoNoMeuEscritorio() {
+      return autenticado()
+        && request.resource.data.escritorioId == meuEscritorio();
+    }
+
+    function ehAdminPlataforma() {
+      return autenticado() && claims().role == 'plataforma_admin';
+    }
+
+    function ehAdminEscritorio() {
+      return autenticado() && claims().role == 'admin' && resource.data.escritorioId == meuEscritorio();
+    }
+
+    // ---- Perfis de usuário -------------------------------------------------
+    // O usuário lê e edita o próprio perfil, mas NUNCA os campos que decidem
+    // acesso: escritorioId, role, status e plano são gravados só pelo servidor.
+    match /users/{userId} {
+      allow read: if autenticado() && (request.auth.uid == userId || ehAdminPlataforma());
+      allow create: if autenticado() && request.auth.uid == userId
+        && !request.resource.data.keys().hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']);
+      allow update: if autenticado() && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']);
+      allow list: if ehAdminPlataforma();
+    }
+
+    // ---- Escritório (tenant): configuração, overlays, assinatura -----------
+    match /escritorios/{escritorioId} {
+      allow read: if autenticado() && escritorioId == meuEscritorio();
+      allow update: if autenticado() && escritorioId == meuEscritorio() && claims().role == 'admin'
+        && !request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(['plano', 'limites', 'status', 'paymentApproved']);
+      // Criação e mudança de plano só pelo servidor (Admin SDK ignora estas regras).
+      allow create, delete: if false;
+    }
+
+    // ---- Casos -------------------------------------------------------------
+    match /cases/{casoId} {
+      allow read, update, delete: if doEscritorio();
+      allow create: if criandoNoMeuEscritorio();
+      allow list: if autenticado();
+    }
+
+    // ---- Documentos dos autos ---------------------------------------------
+    match /documents/{documentoId} {
+      allow read, update, delete: if doEscritorio();
+      allow create: if criandoNoMeuEscritorio();
+      allow list: if autenticado();
+    }
+
+    // ---- Análises produzidas ----------------------------------------------
+    match /analyses/{analiseId} {
+      allow read, delete: if doEscritorio();
+      allow create: if criandoNoMeuEscritorio();
+      // Análise é registro do que a IA produziu: não se edita, refaz-se.
+      allow update: if false;
+      allow list: if autenticado();
+    }
+
+    // ---- Peças e minutas ---------------------------------------------------
+    match /petitions/{pecaId} {
+      allow read, update, delete: if doEscritorio();
+      allow create: if criandoNoMeuEscritorio();
+      allow list: if autenticado();
+    }
+
+    // ---- Biblioteca de modelos e teses do escritório -----------------------
+    match /templates/{modeloId} {
+      allow read: if doEscritorio();
+      allow create: if criandoNoMeuEscritorio();
+      allow update, delete: if doEscritorio() && claims().role in ['admin', 'advogado'];
+      allow list: if autenticado();
+    }
+
+    // ---- Trilha de acesso: gravada só pelo servidor ------------------------
+    match /audit/{registroId} {
+      allow read: if doEscritorio() && claims().role == 'admin';
+      allow create, update, delete: if false;
+    }
+  }
+}

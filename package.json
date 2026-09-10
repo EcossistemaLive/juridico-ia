@@ -1,0 +1,30 @@
+{
+    "name": "juridico-ia",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "npm run build:base && next build",
+        "build:base": "node scripts/gerar-base-juridica.mjs",
+        "start": "next start",
+        "lint": "next lint"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.71.0",
+        "docx": "^9.5.1",
+        "firebase": "^11.2.0",
+        "firebase-admin": "^13.6.0",
+        "lucide-react": "^0.473.0",
+        "mammoth": "^1.11.0",
+        "next": "^15.3.0",
+        "pdf-parse": "^2.4.5",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
+        "zod": "^4.3.6",
+        "zustand": "^5.0.11"
+    },
+    "devDependencies": {
+        "eslint": "^9.0.0",
+        "eslint-config-next": "^15.3.0"
+    }
+}

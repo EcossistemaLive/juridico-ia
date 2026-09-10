@@ -1,0 +1,278 @@
+:root {
+    /* --- Solides Design Tokens --- */
+    --purple-600: #5B2A86;
+    --purple-700: #4A2270;
+    --purple-800: #3B1E5A;
+    --purple-900: #241038;
+    --purple-100: #F1EAF9;
+    
+    --green-500: #00B87C;
+    --lime-400: #C6F24E;
+    
+    --ink-900: #1A1030;
+    --ink-700: #332A47;
+    --ink-500: #5B5768;
+    
+    --canvas: #F7F5FA;
+    --line: #E6E2EE;
+
+    /* Semantic Status */
+    --status-success: #10B981;
+    --status-warning: #F59E0B;
+    --status-danger: #EF4444;
+
+    /* Focus Ring */
+    --slds-focus-ring: var(--purple-600);
+
+    /* Animation */
+    --transition-fast: 0.15s ease;
+    --transition-medium: 0.25s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    color: var(--purple-600);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: var(--purple-700);
+}
+
+body {
+    background-color: var(--canvas);
+    color: var(--ink-700);
+    font-size: 16px;
+    min-height: 100vh;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--ink-900);
+    font-family: var(--font-poppins);
+}
+
+h1 {
+    font-weight: 800;
+    font-size: 3.25rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+h2 {
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1.25;
+}
+
+h3 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.25;
+}
+
+p {
+    max-width: 65ch;
+    margin-bottom: 16px;
+}
+
+/* Glass Card / Solid Card Replacement */
+.glass-card {
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(26, 16, 48, 0.04);
+    transition: all var(--transition-medium);
+}
+
+.glass-card:hover {
+    border-color: var(--purple-600);
+    box-shadow: 0 4px 12px rgba(91, 42, 134, 0.1);
+}
+
+/* Primary Button (Pill shape) */
+.btn-indigo {
+    background: var(--purple-600);
+    color: #FFFFFF;
+    border: none;
+    padding: 0 24px;
+    height: 44px; /* Alvo minimo */
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-indigo:hover {
+    background: var(--purple-700);
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.btn-indigo:focus-visible {
+    outline: 2px solid var(--slds-focus-ring);
+    outline-offset: 2px;
+}
+
+.btn-indigo:disabled {
+    background: var(--line);
+    color: var(--ink-500);
+    cursor: not-allowed;
+}
+
+/* Secondary Button (Pill shape) */
+.btn-secondary {
+    background: transparent;
+    color: var(--purple-600);
+    border: 1px solid var(--purple-600);
+    padding: 0 24px;
+    height: 44px;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    background: var(--purple-100);
+    text-decoration: none;
+}
+
+.btn-secondary:focus-visible {
+    outline: 2px solid var(--slds-focus-ring);
+    outline-offset: 2px;
+}
+
+/* Text Utilities */
+.text-muted {
+    color: var(--ink-500);
+}
+
+/* Layout Utilities */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Input Styles */
+input, textarea, select {
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    padding: 0 16px;
+    min-height: 44px;
+    border-radius: 8px;
+    color: var(--ink-700);
+    font-size: 0.95rem;
+    transition: all var(--transition-fast);
+    width: 100%;
+}
+textarea {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--slds-focus-ring);
+    outline-offset: 2px;
+    border-color: transparent;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--ink-500);
+}
+
+label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-700);
+    margin-bottom: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+}
+
+/* Responsive Grid */
+@media (max-width: 900px) {
+    .grid-collapse {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Legacy Overrides for Brand */
+.text-brand-recruit {
+    color: var(--ink-900);
+}
+.text-brand-ai {
+    color: var(--purple-600);
+    font-weight: 800;
+}
+.brand-underline {
+    border-bottom: 3px solid var(--lime-400);
+    padding-bottom: 2px;
+}
+
+/* Delete Button Styles */
+.btn-delete {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--status-danger);
+    padding: 0 16px;
+    height: 36px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.btn-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--status-danger);
+}
+.btn-delete:focus-visible {
+    outline: 2px solid var(--status-danger);
+    outline-offset: 2px;
+}
