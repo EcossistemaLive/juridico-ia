@@ -90,13 +90,13 @@ export default function SettingsPage() {
 
                         <div className="usage-section">
                             <div className="usage-item">
-                                <span className="usage-label">Vagas criadas</span>
+                                <span className="usage-label">Casos criados</span>
                                 <span className="usage-value">
                                     {subscription?.jobsCount || 0} / {subscription?.currentLimits?.jobs === Infinity ? '∞' : subscription?.currentLimits?.jobs}
                                 </span>
                             </div>
                             <div className="usage-item">
-                                <span className="usage-label">Análises realizadas</span>
+                                <span className="usage-label">Documentos analisados</span>
                                 <span className="usage-value">
                                     {subscription?.cvCount || 0} / {subscription?.currentLimits?.cvs === Infinity ? '∞' : subscription?.currentLimits?.cvs}
                                 </span>

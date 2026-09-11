@@ -11,8 +11,8 @@ export default function Home() {
       <nav className="nav-bar">
         <div className="nav-brand">
           <span className="brand-text brand-underline">
-            <span className="text-brand-recruit">Recrute</span>
-            <span className="text-brand-ai">AI</span>
+            <span className="text-brand-recruit">Jurídico</span>
+            <span className="text-brand-ai"> IA</span>
           </span>
         </div>
         <div className="nav-links">
@@ -26,15 +26,15 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
-          <p className="hero-eyebrow">Plataforma de Recrutamento Inteligente</p>
+          <p className="hero-eyebrow">Plataforma de IA para Advogados</p>
           <h1 className="hero-title">
-            Contrate a <span className="text-gradient">alma</span>,<br />
-            não apenas o arquivo.
+            Redija a <span className="text-gradient">tese</span>,<br />
+            não apenas a petição.
           </h1>
           <p className="hero-subtitle">
-            Transforme o recrutamento burocrático em uma experiência de curadoria de elite.
-            Nossa IA entende histórias, prevê fit cultural e prepara você para a melhor
-            entrevista da sua vida.
+            Transforme o trabalho burocrático em uma experiência de alta performance.
+            Nossa IA entende o caso, planeja as teses com base na sua biblioteca e redige a melhor
+            peça da sua vida.
           </p>
           <div className="hero-cta">
             <Link href="/login" className="btn-primary-large">
@@ -49,12 +49,12 @@ export default function Home() {
       <section className="contrast-section">
         <div className="contrast-grid">
           <GlassCard className="contrast-card old">
-            <span className="contrast-label">O Velho R&S</span>
-            <p>&quot;Tabelas intermináveis, decisões baseadas em palpites e processos que consomem semanas.&quot;</p>
+            <span className="contrast-label">A Velha Advocacia</span>
+            <p>&quot;Copiar e colar de modelos antigos, petições genéricas e processos que consomem horas valiosas.&quot;</p>
           </GlassCard>
           <GlassCard className="contrast-card new">
             <span className="contrast-label">A Nova Era</span>
-            <p>&quot;Interface inteligente, dados acionáveis e uma IA que atua como seu Co-Piloto de Talentos.&quot;</p>
+            <p>&quot;Interface inteligente, análise tática e uma IA que atua como seu Assessor Jurídico.&quot;</p>
           </GlassCard>
         </div>
       </section>
@@ -63,25 +63,25 @@ export default function Home() {
       <section className="pillars-section">
         <div className="section-header">
           <h2>Como Funciona</h2>
-          <p>Três módulos integrados para revolucionar seu processo seletivo</p>
+          <p>Três módulos integrados para revolucionar sua atuação jurídica</p>
         </div>
         <div className="pillars-grid">
           <GlassCard className="pillar-card">
             <span className="pillar-number">01</span>
-            <h3>Anúncios Inteligentes</h3>
-            <p>Gere descrições de vagas otimizadas para atrair os melhores talentos. Nossa IA cria textos persuasivos baseados no perfil ideal do candidato.</p>
+            <h3>Análise de Documentos</h3>
+            <p>Faça upload dos autos do processo. Nossa IA lê tudo, gera uma matriz de risco, extrai prazos e elabora a tabela de evidências automaticamente.</p>
           </GlassCard>
 
           <GlassCard className="pillar-card">
             <span className="pillar-number">02</span>
-            <h3>Triagem Automatizada</h3>
-            <p>Analise currículos e transcrições de entrevistas com precisão. Receba um scorecard detalhado com recomendações claras.</p>
+            <h3>Planejamento Tático</h3>
+            <p>Antes de escrever, defina o esqueleto silogístico. A plataforma aponta pendências e garante que a peça só será redigida se houver material.</p>
           </GlassCard>
 
           <GlassCard className="pillar-card">
             <span className="pillar-number">03</span>
-            <h3>Relatórios Executivos</h3>
-            <p>Exporte análises profissionais em PDF para compartilhar com stakeholders. Dados estruturados para decisões embasadas.</p>
+            <h3>Redação & Auditoria</h3>
+            <p>Assista a IA redigindo em tempo real e realize uma auditoria adversarial que simula os argumentos da parte contrária antes de exportar o DOCX.</p>
           </GlassCard>
         </div>
       </section>
@@ -91,15 +91,15 @@ export default function Home() {
         <div className="stats-grid">
           <div className="stat-item">
             <span className="stat-number">73%</span>
-            <span className="stat-label">Redução no tempo de contratação</span>
+            <span className="stat-label">Redução no tempo de redação</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">4.8</span>
-            <span className="stat-label">Precisão do Match Score</span>
+            <span className="stat-number">100%</span>
+            <span className="stat-label">Conferência dos Checklist</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">&lt;2min</span>
-            <span className="stat-label">Para gerar análise completa</span>
+            <span className="stat-label">Para analisar documentos complexos</span>
           </div>
         </div>
       </section>
@@ -108,15 +108,15 @@ export default function Home() {
       <section className="trust-section">
         <GlassCard className="trust-card">
           <p className="trust-text">
-            &quot;Para empresas que não buscam apenas preencher vagas, mas construir legados.
-            O sistema de curadoria escolhido por líderes que valorizam o tempo e o talento humano.&quot;
+            &quot;Para escritórios que não buscam apenas protocolar petições, mas ganhar causas.
+            A plataforma escolhida por advogados que valorizam a inteligência e o tempo.&quot;
           </p>
         </GlassCard>
       </section>
 
       {/* Final CTA */}
       <section className="final-cta-section">
-        <h2>Pronto para transformar<br />seu recrutamento?</h2>
+        <h2>Pronto para transformar<br />seu escritório?</h2>
         <Link href="/login" className="btn-primary-large">
           <span>Começar Agora</span> <ArrowRight size={18} />
         </Link>
@@ -124,13 +124,13 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="landing-footer">
-        <div className="footer-brand">RecruteAI</div>
+        <div className="footer-brand">Jurídico IA</div>
         <div className="footer-links">
           <Link href="/terms">Termos</Link>
           <Link href="/privacy">Privacidade</Link>
           <Link href="/contact">Contato</Link>
         </div>
-        <p className="footer-copy">© 2026 RecruteAI. Todos os direitos reservados.</p>
+        <p className="footer-copy">© 2026 Ecossistema Live. Todos os direitos reservados.</p>
       </footer>
 
       <style jsx>{`

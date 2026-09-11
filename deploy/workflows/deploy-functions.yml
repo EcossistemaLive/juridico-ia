@@ -1,0 +1,43 @@
+name: Publicar backend nas Cloud Functions
+
+# As chaves ficam aqui, nunca no front. ANTHROPIC_API_KEY é secret do Firebase
+# (definido por `firebase functions:secrets:set`), não variável deste workflow.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "functions/**"
+      - "referencias/advogado-especialista/**"
+      - "firebase.json"
+      - "firestore.rules"
+      - "firestore.indexes.json"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.12.0"
+
+      - name: Instalar dependências das functions
+        run: npm --prefix functions ci
+
+      - name: Gerar a base jurídica
+        run: npm --prefix functions run build:base
+
+      - name: Autenticar no Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Publicar functions e regras
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --only functions,firestore --project ${{ vars.FIREBASE_PROJECT_ID }} --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}

@@ -3,47 +3,62 @@
 import { useState, useEffect } from "react";
 import GlassCard from "../../components/common/GlassCard";
 import StatCard from "../../components/common/StatCard";
-import { Plus, TrendingUp, Users, Calendar, Briefcase, ArrowRight, Zap, Target, Info } from "lucide-react";
+import { Plus, TrendingUp, Scale, Calendar, FileText, ArrowRight, Zap, Target, Info, Shield, CheckCircle } from "lucide-react";
 import Link from "next/link";
-import { useSubscription } from "../../hooks/useSubscription";
+import { useAuth } from "../../context/AuthContext";
 import { db } from "../../lib/firebase";
 import { collection, query, where, getCountFromServer } from "firebase/firestore";
 
 export default function DashboardHome() {
-  const { subscription, user } = useSubscription();
-  const [interviewCount, setInterviewCount] = useState(0);
+  const { userProfile, user } = useAuth();
+  const [stats, setStats] = useState({
+    casos: 0,
+    documentos: 0,
+    minutas: 0,
+    prazos: 0
+  });
 
   useEffect(() => {
-    async function fetchInterviews() {
-      if (user?.uid) {
+    async function fetchStats() {
+      if (user?.uid && userProfile?.escritorioId) {
         try {
-          const q = query(collection(db, "interviews"), where("userId", "==", user.uid), where("status", "==", "scheduled"));
-          const snapshot = await getCountFromServer(q);
-          setInterviewCount(snapshot.data().count);
+          // Aqui no futuro podemos buscar do Firestore. Por enquanto, valores mocados ou queries básicas.
+          // const qCasos = query(collection(db, "cases"), where("escritorioId", "==", userProfile.escritorioId));
+          // const snapshot = await getCountFromServer(qCasos);
+          setStats({
+            casos: 12,
+            documentos: 45,
+            minutas: 3,
+            prazos: 2
+          });
         } catch (e) {
-          console.error("Error fetching interviews:", e);
+          console.error("Error fetching stats:", e);
         }
       }
     }
-    fetchInterviews();
-  }, [user]);
+    fetchStats();
+  }, [user, userProfile]);
 
   return (
     <div className="modern-dashboard">
       {/* Header Section */}
       <div className="dashboard-hero">
         <div className="hero-content">
-          <h1>Olá, <span className="highlight">{subscription?.name || "Líder"}</span> 👋</h1>
-          <p>Seu centro de comando para recrutamento inteligente</p>
+          <h1>Olá, <span className="highlight">{userProfile?.name || "Advogado(a)"}</span> 👋</h1>
+          <p>Seu centro de comando para inteligência processual</p>
         </div>
         <div className="quick-actions">
-          <Link href="/dashboard/jobs/new" className="action-btn primary">
+          <Link href="/dashboard/casos" className="action-btn primary">
             <Plus size={20} />
-            <span>Nova Vaga</span>
+            <span>Novo Caso</span>
           </Link>
-          <Link href="/dashboard/candidates" className="action-btn secondary">
-            <Users size={20} />
-            <span>Analisar CV</span>
+          <Link href="/dashboard/documentos" className="action-btn secondary">
+            <FileText size={20} />
+            <span>Analisar Documento</span>
+          </Link>
+          <Link href="/dashboard/peticoes" className="action-btn secondary">
+            <Scale size={20} />
+            <span>Redigir Peça</span>
           </Link>
         </div>
       </div>
@@ -52,28 +67,28 @@ export default function DashboardHome() {
       <div className="platform-workflow-banner">
         <div className="workflow-title-row">
           <Info size={20} color="var(--purple-600)" />
-          <h3>Como Funciona o Fluxo Live de R&S</h3>
+          <h3>Como Funciona o Fluxo Jurídico IA</h3>
         </div>
         <div className="workflow-steps-grid">
           <div className="workflow-step-card">
             <span className="step-badge">1</span>
-            <h4>Arquiteto de Vagas</h4>
-            <p>Cadastre a empresa contratante, os pesos da família e os critérios eliminatórios do <em>Gate Check</em>.</p>
+            <h4>Triagem & Admissibilidade</h4>
+            <p>Faça o upload da inicial/documentos para verificar decadência, prescrição, tempestividade e competência automaticamente.</p>
           </div>
           <div className="workflow-step-card">
             <span className="step-badge">2</span>
-            <h4>Anúncio Formatado</h4>
-            <p>Gere o anúncio sob medida, limpo e sem asteriscos, pronto para publicação em canais de atração.</p>
+            <h4>Evidências & Fato/Folha</h4>
+            <p>O cérebro extrai as alegações e cruza com as provas, montando uma tabela rastreável (Fato → Prova → Folha).</p>
           </div>
           <div className="workflow-step-card">
             <span className="step-badge">3</span>
-            <h4>Triagem STAR & Ranking</h4>
-            <p>Receba os currículos, faça o upload e obtenha o score de 0 a 100 com auditoria matemática e SWOT.</p>
+            <h4>Planejamento Silogístico</h4>
+            <p>A IA desenha o esqueleto da peça baseada na lei e na tese central, bloqueando a redação caso falte algum elemento chave.</p>
           </div>
           <div className="workflow-step-card">
             <span className="step-badge">4</span>
-            <h4>Entrevista Socrática</h4>
-            <p>Gere o roteiro socrático e o role play <strong>personalizado para cada candidato</strong> aprovado no ranking.</p>
+            <h4>Redação & Auditoria Adversarial</h4>
+            <p>A minuta é gerada em tempo real com auditoria de riscos, simulando os ataques da parte contrária antes do protocolo.</p>
           </div>
         </div>
       </div>
@@ -82,38 +97,38 @@ export default function DashboardHome() {
       <div className="stats-grid">
         <StatCard
           variant="briefcase"
-          icon={<Briefcase size={24} />}
-          value={subscription?.jobsCount || 0}
-          label="Vagas Ativas"
+          icon={<Scale size={24} />}
+          value={stats.casos}
+          label="Total de Casos Ativos"
           trend={0}
         />
 
         <StatCard
           variant="users"
-          icon={<Users size={24} />}
-          value={subscription?.cvCount || 0}
-          label="Análises Realizadas"
+          icon={<FileText size={24} />}
+          value={stats.documentos}
+          label="Documentos Analisados"
           trend={0}
         />
 
         <StatCard
           variant="calendar"
-          icon={<Calendar size={24} />}
-          value={interviewCount}
-          label="Entrevistas Agendadas"
+          icon={<CheckCircle size={24} />}
+          value={stats.minutas}
+          label="Minutas em Elaboração"
         />
 
         <StatCard
           variant="target"
-          icon={<Target size={24} />}
-          value={subscription?.daysRemaining || 0}
-          label="Dias Restantes (Trial)"
+          icon={<Calendar size={24} />}
+          value={stats.prazos}
+          label="Prazos Críticos (7 dias)"
         />
       </div>
 
       {/* Main Content Grid */}
       <div className="content-grid">
-        {/* AI Analysis Card */}
+        {/* Parecer Visual Card */}
         <GlassCard className="feature-card ai-card">
           <div className="card-header">
             <div className="card-icon">
@@ -124,40 +139,40 @@ export default function DashboardHome() {
               Ativo
             </div>
           </div>
-          <h3>Análise com IA</h3>
-          <p>Sistema STAR/SWOT processando candidatos em tempo real com precisão cirúrgica.</p>
-          <Link href="/dashboard/candidates" className="card-action">
-            Iniciar Análise
+          <h3>Parecer Visual Estruturado</h3>
+          <p>Obtenha uma análise imediata dos riscos processuais e admissibilidade ao receber um caso.</p>
+          <Link href="/dashboard/documentos" className="card-action">
+            Iniciar Parecer
             <ArrowRight size={18} />
           </Link>
         </GlassCard>
 
-        {/* Job Architect Card */}
+        {/* Petição Inteligente Card */}
         <GlassCard className="feature-card job-card">
           <div className="card-header">
             <div className="card-icon">
               <Target size={28} />
             </div>
           </div>
-          <h3>Arquiteto de Vagas</h3>
-          <p>Crie descrições de vagas otimizadas para perfis Hunter, Farmer, Técnico ou Liderança.</p>
-          <Link href="/dashboard/jobs/new" className="card-action">
-            Criar Vaga
+          <h3>Draft de Peças</h3>
+          <p>Acesse o motor gerador que garante foco cirúrgico na doutrina e coerência fática.</p>
+          <Link href="/dashboard/peticoes" className="card-action">
+            Acessar Drafting
             <ArrowRight size={18} />
           </Link>
         </GlassCard>
 
-        {/* Pipeline Card */}
+        {/* Biblioteca Card */}
         <GlassCard className="feature-card pipeline-card">
           <div className="card-header">
             <div className="card-icon">
-              <Briefcase size={28} />
+              <Shield size={28} />
             </div>
           </div>
-          <h3>Pipeline de Vagas</h3>
-          <p>Gerencie todas as suas posições abertas e acompanhe o progresso de cada processo.</p>
-          <Link href="/dashboard/jobs" className="card-action">
-            Ver Pipeline
+          <h3>Biblioteca e Modelos</h3>
+          <p>Centralize suas próprias teses para influenciar diretamente a geração de minutas da IA.</p>
+          <Link href="/dashboard/biblioteca" className="card-action">
+            Ver Biblioteca
             <ArrowRight size={18} />
           </Link>
         </GlassCard>

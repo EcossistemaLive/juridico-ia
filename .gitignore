@@ -1,70 +1,53 @@
-# dependencies
+# dependências
 /node_modules
+/functions/node_modules
 /.pnp
 .pnp.js
-.yarn/install-state.gz
 
-# testing
-/coverage
-
-# next.js
+# next / build
 /.next/
 /out/
-
-# production
 /build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-.env.txt
-
-# vercel
-.vercel
-
-# typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# agent files
-.agent/
-
-# Environment & Secrets (AIOS)
+# ambiente e segredos
 .env
 .env.local
-.env.*.local
+.env*.local
+.env.firebase
+.antigravity/
+functions/.env
+*.pem
 *.key
+*service-account*.json
+service-account*.json
 
-# Dependencies (AIOS)
-node_modules/
+# firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
 
-# Build & Logs (AIOS)
-dist/
-build/
+# arquivos GERADOS — regenere com os scripts, não versione
+src/lib/catalogo.js
+functions/skills/base-juridica/conteudo.js
+
+# logs e temporários
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 *.log
 logs/
 
-# IDE & OS (AIOS)
+# IDE e SO
+.DS_Store
 Thumbs.db
 .idea/
 *.swp
-
-# AIOS Local (AIOS)
-.aios-core/local/
+.vscode/settings.local.json
 .claude/settings.local.json
-.aios/install-log.txt
-STATUS_PROGRESSO_DEPLOY.md
 
-# Local Netlify folder
-.netlify
-
-# Base juridica gerada (regenerar com: npm run build:base)
-src/skills/base-juridica/conteudo.js
+# agentes
+.agent/

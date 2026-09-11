@@ -31,13 +31,14 @@ export default function StatCard({ icon, value, label, trend, variant = "briefca
 
             <style jsx>{`
         .stat-card {
-          background: var(--canvas-card);
-          border: 1px solid var(--border-glass);
+          background: var(--canvas-card, #FFFFFF);
+          border: 1px solid var(--border-glass, #E2E8F0);
           border-radius: 16px;
           padding: 24px;
           display: flex;
           align-items: center;
           gap: 16px;
+          box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
           transition: all 0.3s ease;
           position: relative;
           overflow: hidden;
@@ -45,9 +46,9 @@ export default function StatCard({ icon, value, label, trend, variant = "briefca
         }
 
         .stat-card:hover {
-          border-color: var(--action-primary);
+          border-color: var(--purple-500, #7C3AED);
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 6px 18px rgba(91, 42, 134, 0.08);
         }
 
         .stat-icon {
@@ -61,23 +62,23 @@ export default function StatCard({ icon, value, label, trend, variant = "briefca
         }
 
         .stat-icon.briefcase {
-          background: linear-gradient(135deg, rgba(244, 169, 0, 0.2), rgba(244, 169, 0, 0.1));
-          color: var(--action-primary);
+          background: #F3E8FF;
+          color: #6D28D9;
         }
 
         .stat-icon.users {
-          background: linear-gradient(135deg, rgba(193, 102, 107, 0.2), rgba(193, 102, 107, 0.1));
-          color: var(--action-secondary);
+          background: #E0F2FE;
+          color: #0284C7;
         }
 
         .stat-icon.calendar {
-          background: linear-gradient(135deg, rgba(212, 184, 150, 0.2), rgba(212, 184, 150, 0.1));
-          color: var(--action-accent);
+          background: #FEF3C7;
+          color: #D97706;
         }
 
         .stat-icon.target {
-          background: linear-gradient(135deg, rgba(125, 155, 106, 0.2), rgba(125, 155, 106, 0.1));
-          color: var(--status-success);
+          background: #ECFDF5;
+          color: #059669;
         }
 
         .stat-info {
@@ -87,15 +88,15 @@ export default function StatCard({ icon, value, label, trend, variant = "briefca
         .stat-value {
           font-size: 2rem;
           font-weight: 800;
-          color: var(--ink-900);
+          color: var(--ink-900, #0F172A);
           line-height: 1;
           margin-bottom: 4px;
         }
 
         .stat-label {
           font-size: 0.85rem;
-          color: rgba(255, 255, 255, 0.6);
-          font-weight: 500;
+          color: var(--ink-500, #64748B);
+          font-weight: 600;
         }
 
         .stat-trend {
@@ -105,7 +106,17 @@ export default function StatCard({ icon, value, label, trend, variant = "briefca
           padding: 4px 8px;
           border-radius: 8px;
           font-size: 0.75rem;
-          font-weight: 600;
+          font-weight: 700;
+        }
+
+        .stat-trend.positive {
+          background: #ECFDF5;
+          color: #059669;
+        }
+
+        .stat-trend.negative {
+          background: #FEF2F2;
+          color: #DC2626;
         }
 
         .stat-trend.positive {

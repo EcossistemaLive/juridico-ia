@@ -83,7 +83,7 @@ export default function Login() {
     <div className="login-container">
       <main className="login-main">
         <Link href="/" className="brand-link brand-underline" style={{ textDecoration: 'none' }}>
-          <span className="text-brand-recruit">Recruit</span><span className="text-brand-ai">AI</span>
+          <span className="text-brand-recruit">Jurídico</span><span className="text-brand-ai"> IA</span>
         </Link>
 
         <GlassCard className="login-card">

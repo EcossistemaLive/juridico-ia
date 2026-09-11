@@ -1,30 +1,46 @@
 :root {
-    /* --- Solides Design Tokens --- */
-    --purple-600: #5B2A86;
-    --purple-700: #4A2270;
-    --purple-800: #3B1E5A;
-    --purple-900: #241038;
-    --purple-100: #F1EAF9;
-    
-    --green-500: #00B87C;
-    --lime-400: #C6F24E;
-    
-    --ink-900: #1A1030;
-    --ink-700: #332A47;
-    --ink-500: #5B5768;
-    
-    --canvas: #F7F5FA;
-    --line: #E6E2EE;
+    /* --- Jurídico IA Design Tokens (Acessibilidade & Alto Contraste) --- */
+    --purple-900: #1E1035; /* Fundo Sidebar nobre e profundo */
+    --purple-800: #301754; /* Bordas e divisores da Sidebar */
+    --purple-700: #4A2270; /* Hover de ações primárias */
+    --purple-600: #5B2A86; /* Roxo Jurídico Primário */
+    --purple-500: #7C3AED; /* Acentos ativos */
+    --purple-100: #F3E8FF; /* Fundo lavanda suave para badges */
+    --purple-50:  #FAF5FF; /* Fundo sutil para destaques */
 
-    /* Semantic Status */
-    --status-success: #10B981;
-    --status-warning: #F59E0B;
-    --status-danger: #EF4444;
+    /* Ações e Superfícies */
+    --action-primary: #5B2A86;
+    --action-primary-hover: #4A2270;
+    --action-secondary: #6D28D9;
+    --action-accent: #0284C7;
+    
+    --canvas: #F8FAFC;        /* Fundo da tela: Slate 50 limpo */
+    --canvas-card: #FFFFFF;   /* Fundo de cards: Branco puro */
+    --canvas-card-hover: #FFFFFF;
+    --canvas-subtle: #F1F5F9; /* Fundo secundário para blocos internos */
+    --border-glass: #E2E8F0;  /* Bordas nítidas Slate 200 */
+    --line: #E2E8F0;
 
-    /* Focus Ring */
-    --slds-focus-ring: var(--purple-600);
+    /* Tipografia de Alto Contraste (WCAG AAA/AA) */
+    --ink-900: #0F172A; /* Títulos e dados principais: Slate 900 (Contraste 15.8:1 no branco) */
+    --ink-800: #1E293B; /* Texto de ênfase: Slate 800 (Contraste 13.1:1 no branco) */
+    --ink-700: #334155; /* Texto padrão de leitura: Slate 700 (Contraste 9.6:1 no branco) */
+    --ink-500: #64748B; /* Texto secundário/apoio: Slate 500 (Contraste 4.6:1 no branco - Passa AA) */
 
-    /* Animation */
+    /* Status Semânticos Legais */
+    --status-success: #059669; /* Verde esmeralda escuro para contraste no branco */
+    --status-success-bg: #ECFDF5;
+    --status-warning: #D97706; /* Âmbar escuro para contraste no branco */
+    --status-warning-bg: #FFFBEB;
+    --status-danger: #DC2626;  /* Vermelho vivo e legível */
+    --status-danger-bg: #FEF2F2;
+    --status-info: #0284C7;
+    --status-info-bg: #F0F9FF;
+
+    /* Anel de Foco para Acessibilidade */
+    --slds-focus-ring: #5B2A86;
+
+    /* Animação */
     --transition-fast: 0.15s ease;
     --transition-medium: 0.25s ease;
 }
@@ -275,4 +291,42 @@ label {
 .btn-delete:focus-visible {
     outline: 2px solid var(--status-danger);
     outline-offset: 2px;
+}
+
+/* --- Forçar cor branca absoluta em todos os itens do Menu Lateral --- */
+.sidebar,
+.sidebar a,
+.sidebar a:link,
+.sidebar a:visited,
+.sidebar .nav-item,
+.sidebar .nav-item:link,
+.sidebar .nav-item:visited,
+.sidebar .nav-section-title,
+.sidebar .company-name,
+.sidebar .brand {
+    color: #FFFFFF !important;
+}
+
+.sidebar .nav-section-title {
+    color: #FFFFFF !important;
+    opacity: 0.95;
+    font-weight: 700;
+}
+
+.sidebar .nav-item,
+.sidebar .nav-item:link,
+.sidebar .nav-item:visited {
+    color: #FFFFFF !important;
+}
+
+.sidebar .nav-item:hover,
+.sidebar .nav-item:hover:visited {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #FFFFFF !important;
+}
+
+.sidebar .nav-item.active,
+.sidebar .nav-item.active:visited {
+    background: var(--purple-600) !important;
+    color: #FFFFFF !important;
 }

@@ -54,7 +54,7 @@ export default function PageHeader({
         }
 
         .back-link:hover {
-          color: white;
+          color: var(--purple-700);
         }
 
         .header-actions {

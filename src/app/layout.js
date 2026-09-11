@@ -17,8 +17,8 @@ const nunitoSans = Nunito_Sans({
 });
 
 export const metadata = {
-    title: "RecruteAI | Curadoria de Talentos",
-    description: "Plataforma de recrutamento inteligente com IA. Curadoria de alta performance em R&S.",
+    title: "Jurídico IA | Cérebro Jurídico",
+    description: "Plataforma avançada de inteligência artificial para análise de documentos e redação de peças jurídicas.",
 };
 
 export default function RootLayout({ children }) {

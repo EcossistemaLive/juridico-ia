@@ -1,5 +1,21 @@
-﻿{
-  "firestore": {
-    "rules": "firestore.rules"
-  }
+{
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
+    },
+    "functions": [
+        {
+            "source": "functions",
+            "codebase": "juridico",
+            "runtime": "nodejs20",
+            "ignore": [
+                "node_modules",
+                ".git",
+                "*.log"
+            ],
+            "predeploy": [
+                "npm --prefix functions run build:base"
+            ]
+        }
+    ]
 }

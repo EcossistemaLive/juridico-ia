@@ -1,10 +1,10 @@
 "use client";
 
 import { useSubscription } from "@/hooks/useSubscription";
-import { ShieldAlert, Rocket } from "lucide-react";
+import { ShieldAlert, Rocket, Lock } from "lucide-react";
 import GlassCard from "./GlassCard";
 
-export default function SubscriptionGuard({ children, type = "job" }) {
+export default function SubscriptionGuard({ children, type = "job", customMessage = "" }) {
     const { subscription, loading } = useSubscription();
 
     if (loading) return <div>Verificando permissões...</div>;
@@ -16,19 +16,18 @@ export default function SubscriptionGuard({ children, type = "job" }) {
         return (
             <div className="guard-overlay">
                 <GlassCard className="guard-modal animate-fade">
-                    <ShieldAlert size={64} color="var(--live-danger)" />
-                    <h2>Limite Atingido</h2>
+                    <Lock size={48} className="lock-icon" />
+                    <h2>Limite do Plano Alcançado</h2>
                     <p>
-                        {isExpired
-                            ? "Seu período de teste de 7 dias expirou."
-                            : `Você atingiu o limite de ${type === "job" ? "vagas" : "currículos"} do seu plano atual.`}
+                        {customMessage
+                            ? customMessage
+                            : `Você atingiu o limite de ${type === "job" ? "casos" : "análises"} do seu plano atual.`}
                     </p>
 
                     <div className="pricing-mini">
                         <div className="price-item">
-                            <span>Plano Essencial</span>
-                            <strong>R$ 99/mês</strong>
-                            <small>Até 4 vagas e 20 currículos</small>
+                            <span>Plano Grátis (Piloto)</span>
+                            <small>Até 4 casos e 20 análises</small>
                         </div>
                         <div className="price-item highlighted">
                             <span>Plano Elite</span>

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./functions:/app/functions
+      - ./docker/server.mjs:/app/server.mjs
+    environment:
+      - PORT=8080
+      # O env file do firebase não é carregado nativamente pelo docker,
+      # então mapeamos o .env da pasta functions.
+    env_file:
+      - ./functions/.env
+    restart: unless-stopped

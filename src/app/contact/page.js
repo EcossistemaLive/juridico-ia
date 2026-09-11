@@ -15,7 +15,7 @@ export default function Contact() {
         <div className="content-grid">
           <div className="info-column">
             <h1>Fale Conosco</h1>
-            <p className="subtitle">Estamos aqui para ajudar você a transformar seu processo de recrutamento.</p>
+            <p className="subtitle">Estamos aqui para ajudar você a transformar sua atuação jurídica.</p>
 
             <div className="contact-details">
               <div className="detail-item">

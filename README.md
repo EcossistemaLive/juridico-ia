@@ -1,8 +1,9 @@
 # Jurídico IA — Ecossistema Live
 
-> Plataforma de análise de documentos jurídicos e elaboração de peças, construída
-> sobre o mesmo chassi do RecrutaAI: mesma interface, mesma autenticação, mesma
-> infraestrutura. O que muda é o cérebro.
+> SaaS de análise de documentos jurídicos e elaboração de peças, construído sobre
+> o mesmo chassi do RecrutaAI: mesma interface, mesma autenticação, mesmo padrão
+> de skills. O que muda é o cérebro — e a hospedagem, que aqui é GitHub Pages
+> para o front e Cloud Functions para o backend.
 
 ---
 
@@ -30,42 +31,55 @@ com estado de revisão pendente.
 
 ## Como está construído
 
-```
-src/
-├── app/
-│   ├── api/
-│   │   ├── parse-file/        roteia o documento (PDF vai nativo para a IA)
-│   │   ├── analyze-document/  Modo 1
-│   │   ├── plan-petition/     Modo 2, fase 1
-│   │   ├── draft-petition/    Modo 2, fase 2 (streaming)
-│   │   └── review-petition/   revisão adversarial
-│   ├── dashboard/             herdado do RecrutaAI
-│   ├── login/ onboarding/ pending-approval/   herdados sem alteração
-│   └── globals.css            mesmos tokens, paleta a ajustar
-├── components/common/         herdados sem alteração
-├── context/AuthContext.js     herdado
-├── lib/
-│   ├── firebase.js            SDK cliente — só no navegador
-│   ├── firebase-admin.js      Admin SDK — só no servidor
-│   ├── auth-middleware.js     verifyIdToken de verdade
-│   ├── caso-loader.js         contexto do caso, com checagem de escritório
-│   ├── prazos.js              contagem em dias úteis, em código
-│   └── validation.js          schemas Zod da borda
-├── services/aiService.js      fachada — as rotas importam daqui
-├── skills/                    O CÉREBRO
-│   ├── claude-client/         wrapper da API Anthropic
-│   ├── base-juridica/         doutrina por área (contexto cacheável)
-│   ├── doc-analyst/           Modo 1 + revisão
-│   ├── petition-drafter/      Modo 2 + catálogo de peças
-│   └── overlays/              pacote de foro + pacote de estilo
-└── utils/pieceDetection.js    heurística local, sem LLM
+Duas peças com deploys independentes. O front é estático; o cérebro roda em
+Cloud Functions, único lugar onde a chave da Anthropic existe.
 
-referencias/                   material de origem (ver CREDITOS-E-LICENCAS.md)
-scripts/gerar-base-juridica.mjs gera src/skills/base-juridica/conteudo.js
+```
+/                             FRONT — estático, GitHub Pages
+├── src/
+│   ├── app/
+│   │   ├── dashboard/        casos · documentos · peticoes · biblioteca
+│   │   ├── login/ onboarding/ pending-approval/   herdados do RecrutaAI
+│   │   └── globals.css       mesmos tokens, paleta a ajustar
+│   ├── components/common/    GlassCard, StatCard, PageHeader, UploadProgress
+│   ├── context/AuthContext.js
+│   ├── lib/
+│   │   ├── firebase.js       SDK cliente — só no navegador
+│   │   ├── api.js            cliente HTTP das functions (token + streaming)
+│   │   └── catalogo.js       GERADO: áreas e tipos de peça para os selects
+│   ├── store/useCaseStore.js
+│   └── utils/pieceDetection.js   heurística local, sem LLM
+│
+├── functions/                BACKEND — Cloud Functions, southamerica-east1
+│   ├── index.js              parseFile · analisar · planejar · redigir · revisar
+│   ├── lib/
+│   │   ├── firebase-admin.js Admin SDK, credencial automática
+│   │   ├── auth-middleware.js verifyIdToken de verdade
+│   │   ├── caso-loader.js    contexto do caso, com checagem de escritório
+│   │   ├── rate-limiter.js   contagem no Firestore (não em memória)
+│   │   ├── prazos.js         dias úteis, em código
+│   │   ├── validation.js     schemas Zod da borda
+│   │   └── cors.js           origens explícitas, nunca "*"
+│   └── skills/               O CÉREBRO
+│       ├── claude-client/    API Anthropic
+│       ├── base-juridica/    doutrina por área (contexto cacheável)
+│       ├── doc-analyst/      Modo 1 + revisão
+│       ├── petition-drafter/ Modo 2 + catálogo de peças
+│       └── overlays/         pacote de foro + pacote de estilo
+│
+├── referencias/              material de origem (ver CREDITOS-E-LICENCAS.md)
+├── scripts/
+│   ├── gerar-catalogo.mjs    functions/skills → src/lib/catalogo.js
+│   └── bootstrap-admin.mjs   grava as custom claims do primeiro admin
+└── .github/workflows/        deploy-pages.yml · deploy-functions.yml
 ```
 
-O princípio herdado do RecrutaAI e preservado: **a inteligência mora em
-`src/skills/`, atrás de uma fachada**. Nenhuma rota importa o motor diretamente.
+O princípio herdado do RecrutaAI e preservado: **a inteligência mora em `skills/`,
+atrás de uma fachada**. Nenhuma function importa o motor diretamente.
+
+O que mudou de propósito: as rotas de API do Next viraram functions, porque
+GitHub Pages não tem servidor. A regra que decide a arquitetura inteira é que a
+chave da Anthropic nunca pode chegar ao navegador.
 
 ---
 
@@ -86,10 +100,15 @@ O princípio herdado do RecrutaAI e preservado: **a inteligência mora em
 ## Rodando
 
 ```bash
-cp .env.example .env.local     # preencha as chaves
+cp .env.example .env.local            # preencha as chaves públicas do front
 npm install
-npm run build:base             # gera a base jurídica por área
-npm run dev
+npm run build:catalogo                # gera src/lib/catalogo.js
+npm run dev                           # front em localhost:3000
+
+npm --prefix functions install
+cp functions/.env.example functions/.env
+npm --prefix functions run build:base # gera a base jurídica por área
+npm --prefix functions run serve      # emulador das functions
 ```
 
 Infra, coleções, claims e índices: [DEPLOY.md](DEPLOY.md).

@@ -17,24 +17,24 @@ export default function Terms() {
           <p className="last-updated">Última atualização: 26 de Janeiro de 2026</p>
 
           <div className="content">
-            <section>
+            <section className="terms-section">
               <h2>1. Aceitação dos Termos</h2>
-              <p>Ao acessar e usar a plataforma RecruteAI, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso.</p>
+              <p>Ao acessar e usar a plataforma Jurídico IA, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso.</p>
             </section>
 
-            <section>
+            <section className="terms-section">
               <h2>2. Descrição do Serviço</h2>
-              <p>O RecruteAI é uma ferramenta de auxílio ao recrutamento e seleção baseada em inteligência artificial. O serviço é fornecido &quot;como está&quot; e destina-se a apoiar, não substituir, o julgamento humano.</p>
+              <p>O Jurídico IA é uma ferramenta de auxílio à análise jurídica baseada em inteligência artificial. O serviço é fornecido &quot;como está&quot; e destina-se a apoiar, não substituir, o julgamento profissional.</p>
             </section>
 
-            <section>
+            <section className="terms-section">
               <h2>3. Uso Responsável</h2>
-              <p>Você concorda em não usar o serviço para qualquer finalidade ilegal ou proibida por estes termos. O uso de IA para discriminação ou viés intencional é estritamente proibido.</p>
+              <p>Você concorda em não usar o serviço para qualquer finalidade ilegal ou proibida por estes termos. O uso da plataforma para fins ilícitos é estritamente proibido.</p>
             </section>
 
-            <section>
+            <section className="terms-section">
               <h2>4. Propriedade Intelectual</h2>
-              <p>Todo o conteúdo, logotipos e tecnologia da plataforma são propriedade exclusiva do RecruteAI.</p>
+              <p>Todo o conteúdo, logotipos e tecnologia da plataforma são propriedade exclusiva do Jurídico IA (Ecossistema Live).</p>
             </section>
           </div>
         </GlassCard>
