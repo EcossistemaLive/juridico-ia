@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build: 
@@ -9,7 +7,9 @@ services:
       - "8080:8080"
     volumes:
       - ./functions:/app/functions
+      - /app/functions/node_modules
       - ./docker/server.mjs:/app/server.mjs
+      - ./referencias:/app/referencias:ro
     environment:
       - PORT=8080
       # O env file do firebase não é carregado nativamente pelo docker,

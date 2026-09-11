@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mammoth from "mammoth";
-import { adminDb } from "./functions/lib/firebase-admin.js";
+import { adminAuth, adminDb } from "./functions/lib/firebase-admin.js";
 import { carregarContextoDoCaso } from "./functions/lib/caso-loader.js";
 import {
   analisarDocumento,
@@ -31,9 +31,6 @@ app.use(cors({
 // Body parser
 app.use(express.json({ limit: "50mb" }));
 
-// Mock/Adapter de auth middleware apenas para obter o token se necessário
-// Em produção Cloud Function o token é checado, no server local podemos validar via admin SDK
-import { getAuth } from "firebase-admin/auth";
 async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -41,7 +38,7 @@ async function authenticate(req, res, next) {
   }
   const token = authHeader.split("Bearer ")[1];
   try {
-    const decodedToken = await getAuth().verifyIdToken(token);
+    const decodedToken = await adminAuth().verifyIdToken(token);
     req.user = decodedToken;
     
     // Obter dados do usuário no Firestore para preencher identidade

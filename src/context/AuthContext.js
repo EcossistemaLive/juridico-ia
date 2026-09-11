@@ -39,11 +39,21 @@ export function AuthProvider({ children }) {
                         ].includes(firebaseUser.email?.toLowerCase());
 
                         if (isMasterAdmin && (!existingData.paymentApproved || existingData.status !== "active")) {
-                            const adminOverride = { status: "active", paymentApproved: true, plan: "elite" };
+                            const adminOverride = {
+                                status: "active",
+                                paymentApproved: true,
+                                plan: "elite",
+                                escritorioId: existingData.escritorioId || "escritorio_principal",
+                                role: existingData.role || "admin"
+                            };
                             await setDoc(profileRef, adminOverride, { merge: true });
                             setUserProfile({ ...existingData, ...adminOverride });
                         } else {
-                            setUserProfile(existingData);
+                            setUserProfile({
+                                ...existingData,
+                                escritorioId: existingData.escritorioId || "escritorio_principal",
+                                role: existingData.role || "admin"
+                            });
                         }
                     } else {
                         // Novo usuário — criação condicionada à aprovação de pagamento
@@ -60,6 +70,9 @@ export function AuthProvider({ children }) {
                             paymentApproved: isMasterAdmin ? true : false,
                             plan: isMasterAdmin ? "elite" : "pending",
                             companyName: isMasterAdmin ? "Live Consultoria" : null,
+                            escritorioId: "escritorio_principal",
+                            escritorioNome: "Escritório do Dr. De Moraes",
+                            role: isMasterAdmin ? "admin" : "advogado",
                             jobsCount: 0,
                             cvCount: 0
                         };

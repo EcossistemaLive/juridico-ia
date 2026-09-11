@@ -115,6 +115,10 @@ function fatiar(markdown) {
 
 function main() {
     if (!fs.existsSync(FONTE)) {
+        if (fs.existsSync(DESTINO)) {
+            console.log(`[base-juridica] fonte não encontrada, usando base existente em ${path.relative(RAIZ, DESTINO)}`);
+            return;
+        }
         console.error(`[base-juridica] fonte não encontrada: ${FONTE}`);
         process.exit(1);
     }

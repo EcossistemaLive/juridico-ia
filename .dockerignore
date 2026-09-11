@@ -1,0 +1,7 @@
+node_modules
+functions/node_modules
+.next
+out
+.git
+.antigravity
+*.log

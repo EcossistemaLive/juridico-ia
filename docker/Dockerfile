@@ -7,7 +7,7 @@ COPY functions/package*.json ./functions/
 RUN cd functions && npm install
 
 # Instalar pacotes para o servidor express
-RUN npm install express cors dotenv
+RUN npm install express cors dotenv mammoth firebase-admin
 
 # Copiar o restante das functions
 COPY functions/ ./functions/

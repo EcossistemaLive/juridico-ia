@@ -105,10 +105,15 @@ function CasosContent() {
 
   const handleCriarCaso = async (e) => {
     e.preventDefault();
+    if (!user) {
+      alert("Sessão não encontrada. Faça login novamente.");
+      return;
+    }
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     try {
       const docRef = await addDoc(collection(db, "cases"), {
         ...novoCaso,
-        escritorioId: userProfile.escritorioId,
+        escritorioId,
         criadoPor: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -117,7 +122,7 @@ function CasosContent() {
       router.push(`/dashboard/casos?id=${docRef.id}`);
     } catch (err) {
       console.error("Erro ao criar caso:", err);
-      alert("Falha ao criar o caso.");
+      alert("Falha ao criar o caso: " + (err.message || "Erro desconhecido."));
     }
   };
 
