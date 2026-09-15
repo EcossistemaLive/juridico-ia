@@ -26,10 +26,10 @@ export default function BibliotecaPage() {
   });
 
   const loadModelos = async () => {
-    if (!userProfile?.escritorioId) return;
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     setLoading(true);
     try {
-      const q = query(collection(db, "templates"), where("escritorioId", "==", userProfile.escritorioId));
+      const q = query(collection(db, "templates"), where("escritorioId", "==", escritorioId));
       const snap = await getDocs(q);
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setModelos(data);
@@ -67,6 +67,7 @@ export default function BibliotecaPage() {
 
   const handleSalvar = async (e) => {
     e.preventDefault();
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     try {
       if (modeloEmEdicao) {
         await updateDoc(doc(db, "templates", modeloEmEdicao), {
@@ -76,7 +77,7 @@ export default function BibliotecaPage() {
       } else {
         await addDoc(collection(db, "templates"), {
           ...form,
-          escritorioId: userProfile.escritorioId,
+          escritorioId,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp()
         });

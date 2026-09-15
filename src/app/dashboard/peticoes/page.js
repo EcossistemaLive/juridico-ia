@@ -42,11 +42,12 @@ export default function PeticoesPage() {
       return;
     }
     setLoading(true);
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     try {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       const res = await planejarPeca({
         casoId: casoAtivo.id,
-        escritorioId: userProfile.escritorioId,
+        escritorioId,
         area,
         tipoPeca: tipo.nome
       });
@@ -66,12 +67,13 @@ export default function PeticoesPage() {
     }
     setStep(3);
     setTextoGerado(""); // Limpa pra começar o stream
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     try {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       await redigirPeca({
         casoId: casoAtivo.id,
         plano,
-        escritorioId: userProfile.escritorioId,
+        escritorioId,
         area,
         tipoPeca: tipo.nome
       }, (chunk, completo) => {
@@ -84,13 +86,14 @@ export default function PeticoesPage() {
 
   const handleRevisar = async () => {
     setLoading(true);
+    const escritorioId = userProfile?.escritorioId || "escritorio_principal";
     try {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       const res = await revisarPeca({
         casoId: casoAtivo.id,
         textoGerado,
         tipoPeca: tipo.nome,
-        escritorioId: userProfile.escritorioId
+        escritorioId
       });
       setRevisao(res.revisao);
       setStep(4);

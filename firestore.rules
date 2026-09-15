@@ -43,19 +43,29 @@ service cloud.firestore {
     }
 
     function ehAdminPlataforma() {
-      return autenticado() && meuPapel() == 'plataforma_admin';
+      return autenticado() && (
+        meuPapel() == 'plataforma_admin' ||
+        (request.auth.token.email != null && (
+          request.auth.token.email.lower() == 'cleber.ihs@gmail.com' ||
+          request.auth.token.email.lower() == 'cleberdonato@ecossistemalive.com.br' ||
+          request.auth.token.email.lower() == 'ecossistemalive@gmail.com'
+        ))
+      );
     }
 
     // ---- Perfis de usuário -------------------------------------------------
     // O usuário lê e edita o próprio perfil, mas NUNCA os campos que decidem
-    // acesso: escritorioId, role, status e plano são gravados só pelo servidor.
+    // acesso: escritorioId, role, status e plano são gravados só pelo servidor ou por admin da plataforma.
     match /users/{userId} {
       allow read: if autenticado() && (request.auth.uid == userId || ehAdminPlataforma());
-      allow create: if autenticado() && request.auth.uid == userId
-        && !request.resource.data.keys().hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']);
-      allow update: if autenticado() && request.auth.uid == userId
-        && !request.resource.data.diff(resource.data).affectedKeys()
-             .hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']);
+      allow create: if autenticado() && (
+        ehAdminPlataforma() ||
+        (request.auth.uid == userId && !request.resource.data.keys().hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']))
+      );
+      allow update: if autenticado() && (
+        ehAdminPlataforma() ||
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'escritorioId', 'status', 'paymentApproved', 'plano']))
+      );
       allow list: if ehAdminPlataforma();
     }
 

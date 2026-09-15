@@ -73,9 +73,10 @@ export default function DocumentosPage() {
       setProgress(90);
       
       // 3. Salva no Firestore
+      const escritorioId = userProfile?.escritorioId || "escritorio_principal";
       const docRef = await addDoc(collection(db, "analyses"), {
         casoId: casoAtivoId,
-        escritorioId: userProfile.escritorioId,
+        escritorioId,
         nomeArquivo: file.name,
         resultado: result.analise, // Supondo que a API retorna em { analise: ... }
         createdAt: serverTimestamp()
