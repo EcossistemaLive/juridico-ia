@@ -27,6 +27,15 @@ export function AuthProvider({ children }) {
 
             if (firebaseUser) {
                 try {
+                    // Tenta ler claims do token
+                    let claims = {};
+                    try {
+                        const tokenResult = await firebaseUser.getIdTokenResult();
+                        claims = tokenResult.claims || {};
+                    } catch (tokenErr) {
+                        console.warn("[Auth] Token claims error:", tokenErr);
+                    }
+
                     // Fetch or create user profile in Firestore
                     const profileRef = doc(db, "users", firebaseUser.uid);
                     const profileSnap = await getDoc(profileRef);
@@ -43,16 +52,16 @@ export function AuthProvider({ children }) {
                                 status: "active",
                                 paymentApproved: true,
                                 plan: "elite",
-                                escritorioId: existingData.escritorioId || "escritorio_principal",
-                                role: existingData.role || "admin"
+                                escritorioId: claims.escritorioId || existingData.escritorioId || "escritorio_principal",
+                                role: claims.role || existingData.role || "admin"
                             };
                             await setDoc(profileRef, adminOverride, { merge: true });
                             setUserProfile({ ...existingData, ...adminOverride });
                         } else {
                             setUserProfile({
                                 ...existingData,
-                                escritorioId: existingData.escritorioId || "escritorio_principal",
-                                role: existingData.role || "admin"
+                                escritorioId: claims.escritorioId || existingData.escritorioId || "escritorio_principal",
+                                role: claims.role || existingData.role || "admin"
                             });
                         }
                     } else {
@@ -70,9 +79,9 @@ export function AuthProvider({ children }) {
                             paymentApproved: isMasterAdmin ? true : false,
                             plan: isMasterAdmin ? "elite" : "pending",
                             companyName: isMasterAdmin ? "Live Consultoria" : null,
-                            escritorioId: "escritorio_principal",
-                            escritorioNome: "Escritório do Dr. De Moraes",
-                            role: isMasterAdmin ? "admin" : "advogado",
+                            escritorioId: claims.escritorioId || "escritorio_principal",
+                            escritorioNome: claims.escritorioNome || "Escritório do Dr. De Moraes",
+                            role: isMasterAdmin ? "admin" : (claims.role || "advogado"),
                             jobsCount: 0,
                             cvCount: 0
                         };
@@ -92,7 +101,9 @@ export function AuthProvider({ children }) {
                         status: isMasterAdmin ? "active" : "pending_payment",
                         paymentApproved: isMasterAdmin ? true : false,
                         plan: isMasterAdmin ? "elite" : "pending",
-                        companyName: isMasterAdmin ? "Live Consultoria" : null
+                        companyName: isMasterAdmin ? "Live Consultoria" : null,
+                        escritorioId: "escritorio_principal",
+                        role: isMasterAdmin ? "admin" : "advogado"
                     });
                 }
             } else {

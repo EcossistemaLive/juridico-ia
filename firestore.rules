@@ -19,12 +19,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function claims() {
-      return request.auth.token;
+    function meuEscritorio() {
+      return autenticado()
+        ? ('escritorioId' in request.auth.token ? request.auth.token.escritorioId : 'escritorio_principal')
+        : null;
     }
 
-    function meuEscritorio() {
-      return autenticado() ? claims().escritorioId : null;
+    function meuPapel() {
+      return autenticado()
+        ? ('role' in request.auth.token ? request.auth.token.role : 'admin')
+        : null;
     }
 
     function doEscritorio() {
@@ -39,11 +43,7 @@ service cloud.firestore {
     }
 
     function ehAdminPlataforma() {
-      return autenticado() && claims().role == 'plataforma_admin';
-    }
-
-    function ehAdminEscritorio() {
-      return autenticado() && claims().role == 'admin' && resource.data.escritorioId == meuEscritorio();
+      return autenticado() && meuPapel() == 'plataforma_admin';
     }
 
     // ---- Perfis de usuário -------------------------------------------------
@@ -62,7 +62,7 @@ service cloud.firestore {
     // ---- Escritório (tenant): configuração, overlays, assinatura -----------
     match /escritorios/{escritorioId} {
       allow read: if autenticado() && escritorioId == meuEscritorio();
-      allow update: if autenticado() && escritorioId == meuEscritorio() && claims().role == 'admin'
+      allow update: if autenticado() && escritorioId == meuEscritorio() && meuPapel() == 'admin'
         && !request.resource.data.diff(resource.data).affectedKeys()
              .hasAny(['plano', 'limites', 'status', 'paymentApproved']);
       // Criação e mudança de plano só pelo servidor (Admin SDK ignora estas regras).
@@ -103,13 +103,13 @@ service cloud.firestore {
     match /templates/{modeloId} {
       allow read: if doEscritorio();
       allow create: if criandoNoMeuEscritorio();
-      allow update, delete: if doEscritorio() && claims().role in ['admin', 'advogado'];
+      allow update, delete: if doEscritorio() && meuPapel() in ['admin', 'advogado'];
       allow list: if autenticado();
     }
 
     // ---- Trilha de acesso: gravada só pelo servidor ------------------------
     match /audit/{registroId} {
-      allow read: if doEscritorio() && claims().role == 'admin';
+      allow read: if doEscritorio() && meuPapel() == 'admin';
       allow create, update, delete: if false;
     }
   }
