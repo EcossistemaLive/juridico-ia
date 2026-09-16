@@ -70,8 +70,9 @@ export default function DashboardLayout({ children }) {
     <div className="dashboard-layout">
       <aside className="sidebar">
         <div className="sidebar-header">
-          <Link href="/dashboard" className="brand brand-underline">
-            <span className="text-brand-recruit">Jurídico</span><span className="text-brand-ai" style={{ color: "var(--status-warning)" }}> IA</span>
+          <Link href="/dashboard" className="brand-logo">
+            <span className="logo-text-juridico">Jurídico</span>
+            <span className="logo-badge-ia">IA</span>
           </Link>
         </div>
 
@@ -166,16 +167,37 @@ export default function DashboardLayout({ children }) {
         .sidebar-header {
           padding: 24px 20px 20px;
           border-bottom: 1px solid var(--purple-800);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
-        .brand {
+        .brand-logo {
           font-size: 1.5rem;
           font-weight: 800;
-          text-decoration: none;
-          color: #FFFFFF;
+          text-decoration: none !important;
           letter-spacing: -0.02em;
-          display: block;
-          text-align: center;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .logo-text-juridico {
+          color: #FFFFFF !important;
+          font-weight: 800;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-badge-ia {
+          color: #FBBF24 !important;
+          background: rgba(251, 191, 36, 0.18);
+          border: 1px solid rgba(251, 191, 36, 0.45);
+          padding: 2px 7px;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          font-weight: 900;
+          letter-spacing: 0.5px;
+          line-height: 1;
         }
 
         .company-badge {

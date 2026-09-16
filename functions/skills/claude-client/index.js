@@ -55,6 +55,8 @@ function traduzErro(error) {
     return new Error(error?.message || "Falha na chamada ao modelo de IA");
 }
 
+import { DIRETRIZ_SEGURANCA_UNIVERSAL, filtrarVazamentoSistema } from "../../lib/prompt-guard.js";
+
 /**
  * Monta o bloco de system prompt, marcando para cache o conteúdo estável
  * (doutrina, modelos do escritório) — o que reduz muito o custo a partir da
@@ -72,9 +74,13 @@ function buildSystem(systemPrompt, cacheableContext) {
             cache_control: { type: "ephemeral" }
         });
     }
-    if (systemPrompt) {
-        blocks.push({ type: "text", text: systemPrompt });
-    }
+    
+    // Injeta a diretriz constitucional de proteção contra injeção e sigilo em TODAS as chamadas
+    const promptSeguro = systemPrompt
+        ? `${DIRETRIZ_SEGURANCA_UNIVERSAL}\n\n${systemPrompt}`
+        : DIRETRIZ_SEGURANCA_UNIVERSAL;
+
+    blocks.push({ type: "text", text: promptSeguro });
     return blocks.length ? blocks : undefined;
 }
 
@@ -144,7 +150,7 @@ export async function callClaude({ systemPrompt, userContent, model, cacheableCo
             .trim();
 
         if (!texto) throw new Error("Resposta vazia da IA");
-        return texto;
+        return filtrarVazamentoSistema(texto);
     } catch (error) {
         console.error("[claude-client] callClaude:", error?.message);
         throw traduzErro(error);

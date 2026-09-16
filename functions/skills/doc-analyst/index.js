@@ -12,6 +12,7 @@ import { callClaudeStructured, callClaudeWithDocument, MODELS } from "../claude-
 import { SCHEMA_ANALISE_PECA, SCHEMA_REVISAO_PECA } from "./schemas.js";
 import { getBaseJuridica, AREA_LABELS } from "../base-juridica/index.js";
 import { calcularPrazos } from "../../lib/prazos.js";
+import { validarSegurancaCampos, enveloparDadoPassivo } from "../../lib/prompt-guard.js";
 
 /**
  * Analisa um documento jurídico contra o caso de referência.
@@ -27,6 +28,12 @@ import { calcularPrazos } from "../../lib/prazos.js";
  */
 export async function analisarDocumento(escritorio, conteudo, options = {}) {
     if (!conteudo) throw new Error("Conteúdo para análise não fornecido");
+
+    // Validação preventiva contra injeção de prompt e tentativa de extração de sistema
+    validarSegurancaCampos({
+        objetivo: options.objetivo,
+        caso: options.caso
+    }, "opções da análise");
 
     const area = AREA_LABELS[options.area] ? options.area : "civil";
     const systemPrompt = getSystemPrompt(escritorio, area, options);
@@ -49,9 +56,10 @@ export async function analisarDocumento(escritorio, conteudo, options = {}) {
             config: { temperature: 0.1, max_tokens: 16000 }
         });
     } else {
+        const conteudoProtegido = enveloparDadoPassivo(conteudo, "documento_processual");
         resultado = await callClaudeStructured({
             systemPrompt,
-            userContent: `${userPrompt}\n\n## DOCUMENTO PARA ANÁLISE\n\n${conteudo}`,
+            userContent: `${userPrompt}\n\n## DOCUMENTO PARA ANÁLISE\n\n${conteudoProtegido}`,
             schema: SCHEMA_ANALISE_PECA,
             model: MODELS.analise,
             cacheableContext: baseJuridica,
@@ -73,6 +81,13 @@ export async function analisarDocumento(escritorio, conteudo, options = {}) {
  */
 export async function revisarPeca(escritorio, textoPeca, options = {}) {
     if (!textoPeca?.trim()) throw new Error("Peça para revisão não fornecida");
+
+    // Validação preventiva contra injeção de prompt e tentativa de extração de sistema
+    validarSegurancaCampos({
+        tipoPeca: options.tipoPeca,
+        caso: options.caso,
+        fontes: options.fontes
+    }, "opções da revisão");
 
     const area = AREA_LABELS[options.area] ? options.area : "civil";
 
@@ -96,12 +111,15 @@ REGRAS DA REVISÃO
 O campo apto_para_protocolo é false sempre que houver qualquer achado crítico ou requisito formal
 não atendido.`;
 
+    const pecaProtegida = enveloparDadoPassivo(textoPeca, "peca_a_revisar");
+    const fontesProtegidas = options.fontes ? enveloparDadoPassivo(options.fontes, "material_fundamentacao") : null;
+
     const partes = [
         `ESCRITÓRIO: ${escritorio}`,
         `ÁREA: ${AREA_LABELS[area]}`,
         options.caso ? `CASO: ${JSON.stringify(options.caso)}` : "",
-        options.fontes ? `\n## MATERIAL DE FUNDAMENTAÇÃO DISPONÍVEL\n${options.fontes}` : "\n## SEM MATERIAL DE FUNDAMENTAÇÃO — toda citação jurídica da peça é inconferível e deve virar achado.",
-        `\n## PEÇA A REVISAR\n${textoPeca}`
+        fontesProtegidas ? `\n## MATERIAL DE FUNDAMENTAÇÃO DISPONÍVEL\n${fontesProtegidas}` : "\n## SEM MATERIAL DE FUNDAMENTAÇÃO — toda citação jurídica da peça é inconferível e deve virar achado.",
+        `\n## PEÇA A REVISAR\n${pecaProtegida}`
     ].filter(Boolean);
 
     return callClaudeStructured({

@@ -116,7 +116,8 @@ app.post("/analisar", authenticate, async (req, res) => {
     res.json({ success: true, analise });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    const status = err.message?.includes("Entrada rejeitada") ? 400 : 500;
+    res.status(status).json({ error: err.message });
   }
 });
 
@@ -129,7 +130,8 @@ app.post("/planejar", authenticate, async (req, res) => {
     res.json({ success: true, plano });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    const status = err.message?.includes("Entrada rejeitada") ? 400 : 500;
+    res.status(status).json({ error: err.message });
   }
 });
 
@@ -171,7 +173,8 @@ app.post("/revisar", authenticate, async (req, res) => {
     res.json({ success: true, checklist, revisao });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    const status = err.message?.includes("Entrada rejeitada") ? 400 : 500;
+    res.status(status).json({ error: err.message });
   }
 });
 

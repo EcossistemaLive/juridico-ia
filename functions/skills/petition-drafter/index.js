@@ -15,6 +15,7 @@ import { SCHEMA_PLANO_PECA } from "./schemas.js";
 import { getTipoPeca } from "./piece-types.js";
 import { getBaseJuridica, AREA_LABELS, AVISO_RESPONSABILIDADE } from "../base-juridica/index.js";
 import { montarOverlays } from "../overlays/index.js";
+import { validarSegurancaCampos, enveloparDadoPassivo } from "../../lib/prompt-guard.js";
 
 /**
  * Regras que valem para as duas fases. Esta é a metodologia do produto —
@@ -141,11 +142,13 @@ sem preâmbulo, sem comentários seus e sem checklist ao final.`;
     let userContent = montarDossie(escritorio, area, dados);
 
     if (plano) {
+        validarSegurancaCampos(plano, "plano da peça");
         userContent += `\n\n## PLANO APROVADO PELO ADVOGADO\nSiga este plano. Ele já foi validado — não o reabra.\n${JSON.stringify(plano, null, 1)}`;
     }
 
     if (dados.instrucoes) {
-        userContent += `\n\n## INSTRUÇÕES ESPECÍFICAS DO ADVOGADO\n${dados.instrucoes}`;
+        const instrucoesProtegidas = enveloparDadoPassivo(dados.instrucoes, "instrucoes_advogado");
+        userContent += `\n\n## INSTRUÇÕES ESPECÍFICAS DO ADVOGADO\n${instrucoesProtegidas}`;
     }
 
     userContent += `\n\nRedija agora a ${tipo?.nome || dados.tipoPeca}.`;
@@ -183,8 +186,8 @@ export function montarDossie(escritorio, area, dados = {}) {
         if (caso.rito) p += `Rito: ${caso.rito}\n`;
         if (caso.valorCausa) p += `Valor da causa já definido: ${caso.valorCausa}\n`;
         if (caso.teseCentral) p += `Tese central definida pelo advogado: ${caso.teseCentral}\n`;
-        if (caso.fatos) p += `\nFatos narrados pelo cliente:\n${caso.fatos}\n`;
-        if (caso.documentos) p += `\nDocumentos disponíveis:\n${caso.documentos}\n`;
+        if (caso.fatos) p += `\nFatos narrados pelo cliente:\n${enveloparDadoPassivo(caso.fatos, "fatos_narrados")}\n`;
+        if (caso.documentos) p += `\nDocumentos disponíveis:\n${enveloparDadoPassivo(caso.documentos, "documentos_disponiveis")}\n`;
     }
 
     if (analise) {
@@ -196,7 +199,7 @@ export function montarDossie(escritorio, area, dados = {}) {
 
     if (fundamentacao) {
         p += `\n### MATERIAL DE FUNDAMENTAÇÃO VERIFICADO\n`;
-        p += `Somente o que está abaixo pode ser citado como lei ou precedente.\n${fundamentacao}\n`;
+        p += `Somente o que está abaixo pode ser citado como lei ou precedente.\n${enveloparDadoPassivo(fundamentacao, "fundamentacao_juridica")}\n`;
     } else {
         p += `\n### SEM MATERIAL DE JURISPRUDÊNCIA NESTA CHAMADA\n`;
         p += `Não cite súmula, tema ou acórdão. Onde um precedente fortaleceria a tese, escreva\n`;
@@ -227,6 +230,7 @@ function recortarAnalise(analise) {
 function validarEntrada(dados) {
     if (!dados) throw new Error("Dados da peça não fornecidos");
     if (!dados.tipoPeca) throw new Error("Tipo de peça é obrigatório");
+    validarSegurancaCampos(dados, "dados da peça");
 }
 
 /**

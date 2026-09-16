@@ -77,7 +77,8 @@ function protegida(handler, preset) {
         } catch (erro) {
             console.error("[functions]", erro);
             if (!res.headersSent) {
-                res.status(500).json({ error: erro.message || "Erro interno" });
+                const status = erro.message?.includes("Entrada rejeitada") ? 400 : 500;
+                res.status(status).json({ error: erro.message || "Erro interno" });
             } else {
                 res.end();
             }
