@@ -129,7 +129,20 @@ function CasosContent() {
   const selecionarCasoAtivo = () => {
     if (casoAtual) {
       setCasoAtivo(casoAtual);
-      alert("Caso definido como ativo para planejamento e redação!");
+    }
+  };
+
+  const irParaPeticoes = () => {
+    if (casoAtual) {
+      setCasoAtivo(casoAtual);
+      router.push("/dashboard/peticoes");
+    }
+  };
+
+  const irParaDocumentos = () => {
+    if (casoAtual) {
+      setCasoAtivo(casoAtual);
+      router.push("/dashboard/documentos");
     }
   };
 
@@ -148,14 +161,28 @@ function CasosContent() {
         
         <PageHeader 
           title={casoAtual.titulo} 
-          subtitle={`Cadastrado em ${casoAtual.createdAt?.toDate().toLocaleDateString('pt-BR') || 'recente'}`}
-          action={
-            <button 
-              className={`action-btn ${isActiveSession ? 'active' : 'primary'}`}
-              onClick={selecionarCasoAtivo}
-            >
-              {isActiveSession ? <><CheckCircle size={18}/> Caso Ativo na Sessão</> : 'Definir como Caso Ativo'}
-            </button>
+          subtitle={`Cadastrado em ${casoAtual.createdAt?.toDate ? casoAtual.createdAt.toDate().toLocaleDateString('pt-BR') : 'recente'}`}
+          actions={
+            <div className="header-buttons">
+              <button 
+                className={`action-btn ${isActiveSession ? 'active' : 'primary'}`}
+                onClick={selecionarCasoAtivo}
+              >
+                {isActiveSession ? <><CheckCircle size={18}/> Caso Ativo na Sessão</> : <><Scale size={18}/> Definir como Caso Ativo</>}
+              </button>
+              <button 
+                className="action-btn secondary"
+                onClick={irParaPeticoes}
+              >
+                <Gavel size={18}/> Elaborar Petição
+              </button>
+              <button 
+                className="action-btn secondary"
+                onClick={irParaDocumentos}
+              >
+                <Folder size={18}/> Analisar Documento
+              </button>
+            </div>
           }
         />
 
@@ -221,8 +248,14 @@ function CasosContent() {
           .back-btn:hover {
             color: var(--action-primary);
           }
+          .header-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+          }
           .action-btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 8px;
             border: none;
             font-weight: 600;
@@ -230,15 +263,30 @@ function CasosContent() {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
           }
           .action-btn.primary {
-            background: var(--purple-600);
-            color: var(--ink-900);
+            background: #7C3AED;
+            color: #FFFFFF !important;
+            box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2);
+          }
+          .action-btn.primary:hover {
+            background: #6D28D9;
           }
           .action-btn.active {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--status-success);
-            border: 1px solid var(--status-success);
+            background: #ECFDF5;
+            color: #059669 !important;
+            border: 1px solid #10B981;
+          }
+          .action-btn.secondary {
+            background: #F8FAFC;
+            color: #334155 !important;
+            border: 1px solid #CBD5E1;
+          }
+          .action-btn.secondary:hover {
+            background: #F1F5F9;
+            color: #0F172A !important;
           }
           .ficha-grid {
             display: grid;
@@ -341,23 +389,43 @@ function CasosContent() {
             <button onClick={() => setIsModalOpen(true)}>Criar meu primeiro caso</button>
           </div>
         ) : (
-          casos.map(caso => (
-            <GlassCard key={caso.id} className="caso-card">
-              <div className="caso-header">
-                <span className={`status-badge ${caso.status === 'ativo' ? 'active' : ''}`}>{caso.status}</span>
-                <span className="polo-badge">{caso.polo}</span>
-              </div>
-              <h3 className="caso-title">{caso.titulo}</h3>
-              <p className="caso-cnj">{caso.numeroCnj || "Sem número CNJ"}</p>
-              
-              <div className="caso-footer">
-                <span className="area-tag">{caso.area}</span>
-                <button className="view-btn" onClick={() => router.push(`/dashboard/casos?id=${caso.id}`)}>
-                  Ver Ficha <ArrowLeft size={16} style={{transform: 'rotate(180deg)'}} />
-                </button>
-              </div>
-            </GlassCard>
-          ))
+          casos.map(caso => {
+            const isCardActive = casoAtivoId === caso.id;
+            return (
+              <GlassCard key={caso.id} className={`caso-card ${isCardActive ? 'card-active' : ''}`}>
+                <div className="caso-header">
+                  <span className={`status-badge ${caso.status === 'ativo' ? 'active' : ''}`}>{caso.status}</span>
+                  {isCardActive && (
+                    <span className="badge-active-tag">
+                      <CheckCircle size={12} /> Ativo na Sessão
+                    </span>
+                  )}
+                  <span className="polo-badge">{caso.polo}</span>
+                </div>
+                <h3 className="caso-title">{caso.titulo}</h3>
+                <p className="caso-cnj">{caso.numeroCnj || "Sem número CNJ"}</p>
+                
+                <div className="caso-footer">
+                  <span className="area-tag">{caso.area}</span>
+                  <div className="card-btn-group">
+                    <button 
+                      type="button"
+                      className={`btn-card-activate ${isCardActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCasoAtivo(caso);
+                      }}
+                    >
+                      {isCardActive ? '✓ Ativo' : 'Ativar Caso'}
+                    </button>
+                    <button className="view-btn" onClick={() => router.push(`/dashboard/casos?id=${caso.id}`)}>
+                      Ver Ficha <ArrowLeft size={16} style={{transform: 'rotate(180deg)'}} />
+                    </button>
+                  </div>
+                </div>
+              </GlassCard>
+            );
+          })
         )}
       </div>
 
@@ -446,8 +514,8 @@ function CasosContent() {
         }
 
         .add-btn {
-          background: var(--action-primary);
-          color: var(--ink-900);
+          background: #7C3AED;
+          color: #FFFFFF !important;
           border: none;
           padding: 10px 20px;
           border-radius: 8px;
@@ -457,10 +525,11 @@ function CasosContent() {
           gap: 8px;
           cursor: pointer;
           transition: background 0.2s;
+          box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
         }
 
         .add-btn:hover {
-          background: var(--purple-400);
+          background: #6D28D9;
         }
 
         .filters-bar {
@@ -528,16 +597,23 @@ function CasosContent() {
           padding: 20px;
           display: flex;
           flex-direction: column;
-          transition: transform 0.2s;
+          transition: all 0.2s ease;
+          border: 1px solid var(--line);
         }
         
         .caso-card:hover {
           transform: translateY(-4px);
         }
 
+        .caso-card.card-active {
+          border: 2px solid #10B981;
+          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+        }
+
         .caso-header {
           display: flex;
           justify-content: space-between;
+          align-items: center;
           margin-bottom: 12px;
         }
 
@@ -555,6 +631,19 @@ function CasosContent() {
           background: var(--status-success-bg);
           color: var(--status-success);
           font-weight: 700;
+        }
+
+        .badge-active-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.72rem;
+          font-weight: 700;
+          background: #ECFDF5;
+          color: #059669;
+          border: 1px solid #10B981;
+          padding: 3px 8px;
+          border-radius: 6px;
         }
 
         .polo-badge {
@@ -588,6 +677,35 @@ function CasosContent() {
           align-items: center;
           padding-top: 16px;
           border-top: 1px solid var(--line);
+        }
+
+        .card-btn-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .btn-card-activate {
+          background: #7C3AED;
+          color: #FFFFFF !important;
+          border: none;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 0.8rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-card-activate:hover {
+          background: #6D28D9;
+        }
+
+        .btn-card-activate.active {
+          background: #ECFDF5;
+          color: #059669 !important;
+          border: 1px solid #10B981;
+          cursor: default;
         }
 
         .area-tag {

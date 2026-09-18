@@ -8,13 +8,20 @@ import { useAuth } from "../../../context/AuthContext";
 import { useCaseStore } from "../../../store/useCaseStore";
 import { AREA_LABELS, tiposPorGrupo, TIPOS_PECA } from "../../../lib/catalogo";
 import { planejarPeca, redigirPeca, revisarPeca } from "../../../lib/api";
-import { Scale, CheckCircle, ShieldAlert, ArrowRight, Play, Edit3, Download, Search, Settings, AlertTriangle } from "lucide-react";
+import { Scale, CheckCircle, ShieldAlert, ArrowRight, Play, Edit3, Download, Search, Settings, AlertTriangle, FolderPlus } from "lucide-react";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import { db } from "../../../lib/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 export default function PeticoesPage() {
   const router = useRouter();
   const { userProfile } = useAuth();
   const casoAtivo = useCaseStore(state => state.casoAtivo);
+  const setCasoAtivo = useCaseStore(state => state.setCasoAtivo);
+
+  const [casosDisponiveis, setCasosDisponiveis] = useState([]);
+  const [loadingCasos, setLoadingCasos] = useState(false);
+  const [casoSelecionadoId, setCasoSelecionadoId] = useState("");
   
   // Passo atual: 1(Config), 2(Plano), 3(Redação), 4(Revisão)
   const [step, setStep] = useState(1);
@@ -35,6 +42,30 @@ export default function PeticoesPage() {
       setArea(casoAtivo.area);
     }
   }, [casoAtivo]);
+
+  useEffect(() => {
+    async function carregarCasos() {
+      if (!userProfile?.escritorioId || casoAtivo) return;
+      try {
+        setLoadingCasos(true);
+        const q = query(
+          collection(db, "cases"),
+          where("escritorioId", "==", userProfile.escritorioId)
+        );
+        const snap = await getDocs(q);
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setCasosDisponiveis(docs);
+        if (docs.length > 0) {
+          setCasoSelecionadoId(docs[0].id);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar casos:", err);
+      } finally {
+        setLoadingCasos(false);
+      }
+    }
+    carregarCasos();
+  }, [userProfile, casoAtivo]);
 
   const handlePlanejar = async () => {
     if (!casoAtivo) {
@@ -90,31 +121,33 @@ export default function PeticoesPage() {
     try {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       const res = await revisarPeca({
-        casoId: casoAtivo.id,
         textoGerado,
+        area,
         tipoPeca: tipo.nome,
+        casoId: casoAtivo?.id,
         escritorioId
       });
-      setRevisao(res.revisao);
+      setRevisao(res);
       setStep(4);
     } catch (err) {
-      alert(err.message || "Erro na revisão");
+      alert("Erro na auditoria da peça: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const exportDocx = async () => {
+  const exportarWord = async () => {
+    if (!textoGerado) return;
     const doc = new Document({
       sections: [{
         properties: {},
-        children: textoGerado.split('\n').map(linha => new Paragraph({
-          children: [new TextRun({ text: linha, font: "Arial", size: 24 })],
-          spacing: { after: 200 }
-        }))
+        children: textoGerado.split("\n").map(paragrafo => 
+          new Paragraph({
+            children: [new TextRun({ text: paragrafo, size: 24 })]
+          })
+        )
       }]
     });
-
     const blob = await Packer.toBlob(doc);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -127,16 +160,72 @@ export default function PeticoesPage() {
   const grupos = tiposPorGrupo();
 
   if (!casoAtivo) {
+    const handleConfirmarAtivacao = (casoEspecifico) => {
+      const target = casoEspecifico || casosDisponiveis.find(c => c.id === casoSelecionadoId);
+      if (target) {
+        setCasoAtivo(target);
+      }
+    };
+
     return (
       <div className="peticoes-page">
         <PageHeader title="Petições & Minutas" subtitle="Drafting inteligente de peças processuais" />
-        <GlassCard className="empty-state">
-          <Scale size={48} color="var(--ink-500)" />
-          <h3>Nenhum Caso Ativo</h3>
-          <p>Você precisa selecionar um processo em que vai atuar.</p>
-          <button className="primary-btn" onClick={() => router.push("/dashboard/casos")}>
-            Ir para Casos
-          </button>
+        <GlassCard className="empty-state-selecao">
+          <div className="icone-alerta">
+            <Scale size={48} color="#7C3AED" />
+          </div>
+          <h3>Vincule um Caso para Iniciar a Peça</h3>
+          <p className="subtexto-selecao">
+            A redação forense necessita dos fatos, rito e polo do processo para calibrar a tese.
+          </p>
+
+          {loadingCasos ? (
+            <div className="loading-casos">Carregando processos do seu escritório...</div>
+          ) : casosDisponiveis.length > 0 ? (
+            <div className="selecao-casos-container">
+              <label className="label-seletor">Escolha um processo ativo abaixo:</label>
+              <div className="casos-lista-rapida">
+                {casosDisponiveis.map(c => (
+                  <div 
+                    key={c.id} 
+                    className={`caso-card-compacto ${casoSelecionadoId === c.id ? 'selecionado' : ''}`}
+                    onClick={() => setCasoSelecionadoId(c.id)}
+                  >
+                    <div className="compacto-topo">
+                      <span className="compacto-titulo">{c.titulo}</span>
+                      <span className="compacto-area">{c.area}</span>
+                    </div>
+                    <div className="compacto-cnj">{c.numeroCnj || "Sem número CNJ"}</div>
+                    <div className="compacto-polo">Polo: <strong>{c.polo}</strong></div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="selecao-actions">
+                <button 
+                  type="button" 
+                  className="primary-btn-destaque" 
+                  onClick={() => handleConfirmarAtivacao()}
+                >
+                  <CheckCircle size={18} /> Ativar Caso e Continuar
+                </button>
+                <button 
+                  type="button" 
+                  className="secondary-btn-destaque" 
+                  onClick={() => router.push("/dashboard/casos")}
+                >
+                  <FolderPlus size={18} /> Gerenciar / Novo Caso
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="sem-casos-aviso">
+              <p>Você ainda não tem nenhum caso cadastrado.</p>
+              <button className="primary-btn-destaque" onClick={() => router.push("/dashboard/casos")}>
+                <Plus size={18} /> Cadastrar Primeiro Caso
+              </button>
+            </div>
+          )}
         </GlassCard>
       </div>
     );
@@ -570,6 +659,174 @@ export default function PeticoesPage() {
           color: var(--ink-700);
           font-size: 0.9rem;
           line-height: 1.5;
+        }
+
+        .empty-state-selecao {
+          max-width: 680px;
+          margin: 40px auto;
+          text-align: center;
+          padding: 40px 32px;
+        }
+
+        .icone-alerta {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          background: rgba(124, 58, 237, 0.1);
+          margin-bottom: 20px;
+        }
+
+        .empty-state-selecao h3 {
+          font-size: 1.4rem;
+          color: var(--ink-900);
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+
+        .subtexto-selecao {
+          color: var(--ink-500);
+          font-size: 0.95rem;
+          margin-bottom: 28px;
+        }
+
+        .loading-casos {
+          color: var(--ink-500);
+          font-size: 0.9rem;
+          padding: 20px;
+        }
+
+        .selecao-casos-container {
+          text-align: left;
+        }
+
+        .label-seletor {
+          display: block;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--ink-700);
+          margin-bottom: 12px;
+        }
+
+        .casos-lista-rapida {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          max-height: 280px;
+          overflow-y: auto;
+          margin-bottom: 24px;
+          padding-right: 4px;
+        }
+
+        .caso-card-compacto {
+          padding: 14px 18px;
+          border-radius: 10px;
+          border: 1px solid var(--line);
+          background: #FFFFFF;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .caso-card-compacto:hover {
+          border-color: #7C3AED;
+          box-shadow: 0 2px 8px rgba(124, 58, 237, 0.12);
+        }
+
+        .caso-card-compacto.selecionado {
+          border: 2px solid #7C3AED;
+          background: rgba(124, 58, 237, 0.04);
+          box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
+        }
+
+        .compacto-topo {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        }
+
+        .compacto-titulo {
+          font-weight: 700;
+          color: var(--ink-900);
+          font-size: 1rem;
+        }
+
+        .compacto-area {
+          font-size: 0.75rem;
+          background: var(--purple-100);
+          color: var(--purple-900);
+          font-weight: 700;
+          padding: 2px 8px;
+          border-radius: 6px;
+          text-transform: capitalize;
+        }
+
+        .compacto-cnj {
+          font-family: monospace;
+          color: var(--ink-500);
+          font-size: 0.85rem;
+          margin-bottom: 4px;
+        }
+
+        .compacto-polo {
+          font-size: 0.8rem;
+          color: var(--ink-700);
+        }
+
+        .selecao-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 16px;
+        }
+
+        .primary-btn-destaque {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 20px;
+          border-radius: 8px;
+          background: #7C3AED;
+          color: #FFFFFF !important;
+          border: none;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: background 0.2s;
+          box-shadow: 0 2px 6px rgba(124, 58, 237, 0.3);
+        }
+
+        .primary-btn-destaque:hover {
+          background: #6D28D9;
+        }
+
+        .secondary-btn-destaque {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 12px 18px;
+          border-radius: 8px;
+          background: #F8FAFC;
+          color: #334155 !important;
+          border: 1px solid #CBD5E1;
+          font-weight: 600;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .secondary-btn-destaque:hover {
+          background: #F1F5F9;
+          color: #0F172A !important;
+        }
+
+        .sem-casos-aviso {
+          padding: 20px;
+          color: var(--ink-500);
         }
       `}</style>
     </div>

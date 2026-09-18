@@ -20,8 +20,11 @@ export default function PageHeader({
     backPath,
     backLabel = "Voltar",
     actions,
+    action,
     className = ""
 }) {
+    const actionElements = actions || action;
+
     return (
         <header className={`page-header ${className}`}>
             {backPath && (
@@ -34,7 +37,7 @@ export default function PageHeader({
                     <h1>{title}</h1>
                     {subtitle && <p className="subtitle">{subtitle}</p>}
                 </div>
-                {actions && <div className="actions-wrapper">{actions}</div>}
+                {actionElements && <div className="actions-wrapper">{actionElements}</div>}
             </div>
 
             <style jsx>{`

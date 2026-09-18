@@ -15,6 +15,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 export default function DocumentosPage() {
   const router = useRouter();
   const { userProfile } = useAuth();
+  const casoAtivo = useCaseStore((state) => state.casoAtivo);
   const casoAtivoId = useCaseStore((state) => state.casoAtivoId);
   const setUltimaAnalise = useCaseStore((state) => state.setUltimaAnalise);
   
@@ -100,13 +101,13 @@ export default function DocumentosPage() {
     <div className="documentos-page">
       <PageHeader 
         title="Análise de Documentos" 
-        subtitle="Faça o upload de iniciais, petições ou evidências para Parecer Visual Automático."
+        subtitle={casoAtivo ? `Caso Ativo: ${casoAtivo.titulo} (Área: ${casoAtivo.area})` : "Faça o upload de iniciais, petições ou evidências para Parecer Visual Automático."}
       />
 
       {!casoAtivoId && (
         <div className="alert-banner warning">
           <AlertTriangle size={20} />
-          <span>Você não possui um <strong>Caso Ativo</strong> selecionado. Vá em <a href="/dashboard/casos">Casos</a> e defina um para associar esta análise.</span>
+          <span>Você não possui um <strong>Caso Ativo</strong> selecionado para vincular a esta análise. <button type="button" className="banner-link-btn" onClick={() => router.push("/dashboard/casos")}>Vincular Caso Agora</button></span>
         </div>
       )}
 
@@ -658,6 +659,39 @@ export default function DocumentosPage() {
           background: var(--purple-700);
           transform: translateY(-2px);
           box-shadow: 0 10px 25px rgba(91, 42, 134, 0.25);
+        }
+
+        .alert-banner {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 20px;
+          border-radius: 10px;
+          margin-bottom: 24px;
+          font-size: 0.95rem;
+        }
+
+        .alert-banner.warning {
+          background: #FFFBEB;
+          border: 1px solid #FDE68A;
+          color: #92400E;
+        }
+
+        .banner-link-btn {
+          margin-left: 8px;
+          background: #7C3AED;
+          color: #FFFFFF;
+          border: none;
+          padding: 6px 14px;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .banner-link-btn:hover {
+          background: #6D28D9;
         }
       `}</style>
     </div>
