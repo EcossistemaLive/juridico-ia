@@ -165,18 +165,21 @@ function CasosContent() {
           actions={
             <div className="header-buttons">
               <button 
+                type="button"
                 className={`action-btn ${isActiveSession ? 'active' : 'primary'}`}
                 onClick={selecionarCasoAtivo}
               >
                 {isActiveSession ? <><CheckCircle size={18}/> Caso Ativo na Sessão</> : <><Scale size={18}/> Definir como Caso Ativo</>}
               </button>
               <button 
+                type="button"
                 className="action-btn secondary"
                 onClick={irParaPeticoes}
               >
                 <Gavel size={18}/> Elaborar Petição
               </button>
               <button 
+                type="button"
                 className="action-btn secondary"
                 onClick={irParaDocumentos}
               >
@@ -185,6 +188,41 @@ function CasosContent() {
             </div>
           }
         />
+
+        {/* Barra de Ações Rápidas em Destaque */}
+        <div className="barra-acoes-caso">
+          <div className="status-caso-info">
+            <span className="status-label">Sessão de Trabalho:</span>
+            {isActiveSession ? (
+              <span className="status-ativo-pill"><CheckCircle size={16} /> Processo Vinculado e Ativo</span>
+            ) : (
+              <span className="status-inativo-pill"><AlertTriangle size={16} /> Processo Não Vinculado</span>
+            )}
+          </div>
+          <div className="botoes-acao-rapida">
+            <button 
+              type="button"
+              className={`btn-principal-ativar ${isActiveSession ? 'ja-ativo' : ''}`}
+              onClick={selecionarCasoAtivo}
+            >
+              {isActiveSession ? <><CheckCircle size={18}/> Caso Ativo na Sessão</> : <><Scale size={18}/> Ativar este Caso</>}
+            </button>
+            <button 
+              type="button"
+              className="btn-atalho-peticao"
+              onClick={irParaPeticoes}
+            >
+              <Gavel size={18}/> Redigir Petição
+            </button>
+            <button 
+              type="button"
+              className="btn-atalho-doc"
+              onClick={irParaDocumentos}
+            >
+              <Folder size={18}/> Analisar Documentos
+            </button>
+          </div>
+        </div>
 
         <div className="ficha-grid">
           <GlassCard className="info-card">
@@ -286,6 +324,119 @@ function CasosContent() {
           }
           .action-btn.secondary:hover {
             background: #F1F5F9;
+            color: #0F172A !important;
+          }
+          .barra-acoes-caso {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            flex-wrap: wrap;
+          }
+          .status-caso-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .status-label {
+            font-size: 0.85rem;
+            color: var(--ink-500);
+            font-weight: 600;
+          }
+          .status-ativo-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ECFDF5;
+            color: #059669;
+            border: 1px solid #10B981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+          }
+          .status-inativo-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFFBEB;
+            color: #D97706;
+            border: 1px solid #F59E0B;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+          }
+          .botoes-acao-rapida {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+          }
+          .btn-principal-ativar {
+            background: #7C3AED;
+            color: #FFFFFF !important;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
+          }
+          .btn-principal-ativar:hover {
+            background: #6D28D9;
+          }
+          .btn-principal-ativar.ja-ativo {
+            background: #ECFDF5;
+            color: #059669 !important;
+            border: 1px solid #10B981;
+            box-shadow: none;
+            cursor: default;
+          }
+          .btn-atalho-peticao {
+            background: #1E1B4B;
+            color: #FFFFFF !important;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+          }
+          .btn-atalho-peticao:hover {
+            background: #312E81;
+          }
+          .btn-atalho-doc {
+            background: #F1F5F9;
+            color: #334155 !important;
+            border: 1px solid #CBD5E1;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+          }
+          .btn-atalho-doc:hover {
+            background: #E2E8F0;
             color: #0F172A !important;
           }
           .ficha-grid {

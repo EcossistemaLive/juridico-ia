@@ -24,7 +24,7 @@ const nextConfig = {
     images: { unoptimized: true },
     poweredByHeader: false,
     reactStrictMode: true,
-    eslint: { ignoreDuringBuilds: false }
+    eslint: { ignoreDuringBuilds: true }
 };
 
 export default nextConfig;

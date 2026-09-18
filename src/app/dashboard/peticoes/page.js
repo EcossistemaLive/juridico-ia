@@ -8,7 +8,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useCaseStore } from "../../../store/useCaseStore";
 import { AREA_LABELS, tiposPorGrupo, TIPOS_PECA } from "../../../lib/catalogo";
 import { planejarPeca, redigirPeca, revisarPeca } from "../../../lib/api";
-import { Scale, CheckCircle, ShieldAlert, ArrowRight, Play, Edit3, Download, Search, Settings, AlertTriangle, FolderPlus } from "lucide-react";
+import { Scale, CheckCircle, ShieldAlert, ArrowRight, Play, Edit3, Download, Search, Settings, AlertTriangle, FolderPlus, Plus } from "lucide-react";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import { db } from "../../../lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
