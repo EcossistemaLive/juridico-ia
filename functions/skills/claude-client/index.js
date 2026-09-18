@@ -24,9 +24,14 @@ export const MODELS = {
 };
 
 const DEFAULT_CONFIG = {
-    temperature: 0.2,
     max_tokens: 8192
 };
+
+function sanitizeConfig(config = {}) {
+    const clean = { ...DEFAULT_CONFIG, ...config };
+    delete clean.temperature;
+    return clean;
+}
 
 let singleton = null;
 
@@ -137,8 +142,7 @@ export async function callClaude({ systemPrompt, userContent, model, cacheableCo
     try {
         const response = await client.messages.create({
             model: model || MODELS.analise,
-            ...DEFAULT_CONFIG,
-            ...config,
+            ...sanitizeConfig(config),
             system: buildSystem(systemPrompt, cacheableContext),
             messages: [{ role: "user", content: buildUserContent(userContent) }]
         });
@@ -168,8 +172,7 @@ export async function* streamClaude({ systemPrompt, userContent, model, cacheabl
     try {
         const stream = await client.messages.create({
             model: model || MODELS.redacao,
-            ...DEFAULT_CONFIG,
-            ...config,
+            ...sanitizeConfig(config),
             stream: true,
             system: buildSystem(systemPrompt, cacheableContext),
             messages: [{ role: "user", content: buildUserContent(userContent) }]
@@ -209,8 +212,7 @@ export async function callClaudeStructured({
     try {
         const response = await client.messages.create({
             model: model || MODELS.analise,
-            ...DEFAULT_CONFIG,
-            ...config,
+            ...sanitizeConfig(config),
             system: buildSystem(systemPrompt, cacheableContext),
             messages: [{ role: "user", content: buildUserContent(userContent) }],
             tools: [{ name: toolName, description: toolDescription, input_schema: schema }],
