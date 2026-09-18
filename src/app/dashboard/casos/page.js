@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import GlassCard from "../../../components/common/GlassCard";
 import PageHeader from "../../../components/common/PageHeader";
-import { Plus, Search, Filter, Folder, ArrowLeft, Building2, Scale, Users, Gavel, CheckCircle, Clock } from "lucide-react";
+import { Plus, Search, Filter, Folder, ArrowLeft, Building2, Scale, Users, Gavel, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 import { db } from "../../../lib/firebase";
 import { collection, query, where, getDocs, doc, getDoc, addDoc, serverTimestamp, updateDoc } from "firebase/firestore";
