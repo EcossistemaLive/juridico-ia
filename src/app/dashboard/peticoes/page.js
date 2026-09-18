@@ -303,22 +303,22 @@ export default function PeticoesPage() {
             <div className="plano-body">
               <div className="plano-section">
                 <h4>Premissa Maior (Fundamento Jurídico)</h4>
-                <p>{plano.premissaMaior}</p>
+                <p>{plano.premissaMaior || plano.silogismo_central?.premissa_maior || "Fundamentação legal identificada."}</p>
               </div>
               <div className="plano-section">
                 <h4>Premissa Menor (Fatos do Caso)</h4>
-                <p>{plano.premissaMenor}</p>
+                <p>{plano.premissaMenor || plano.silogismo_central?.premissa_menor || "Fatos narrados e documentos associados."}</p>
               </div>
               <div className="plano-section">
                 <h4>Conclusão (Pedidos)</h4>
-                <p>{plano.conclusaoPedidos}</p>
+                <p>{plano.conclusaoPedidos || plano.silogismo_central?.conclusao || "Pedidos delimitados."}</p>
               </div>
 
-              {!plano.pode_redigir && plano.pendencias && (
+              {!plano.pode_redigir && (plano.pendencias || plano.bloqueios) && (
                 <div className="alert-box error">
                   <strong>Pendências que impedem a redação:</strong>
                   <ul>
-                    {plano.pendencias.map((pend, i) => <li key={i}>{pend}</li>)}
+                    {(plano.pendencias || (plano.bloqueios || []).map(b => typeof b === 'string' ? b : `${b.bloqueio} (${b.gravidade})`)).map((pend, i) => <li key={i}>{pend}</li>)}
                   </ul>
                   <button className="secondary-btn" onClick={() => router.push(`/dashboard/documentos?id=${casoAtivo.id}`)}>
                     Saneamento: Enviar mais Documentos

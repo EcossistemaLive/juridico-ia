@@ -154,6 +154,17 @@ app.post('/planejar', authenticate, async (req, res) => {
     if (contexto.erro) return res.status(contexto.status).json({ error: contexto.erro });
 
     const plano = await planejarPeca(req.identidade.escritorioNome, contexto.dados);
+
+    // Normalizar propriedades para compatibilidade total com o front-end
+    if (plano && plano.silogismo_central) {
+      plano.premissaMaior = plano.premissaMaior || plano.silogismo_central.premissa_maior;
+      plano.premissaMenor = plano.premissaMenor || plano.silogismo_central.premissa_menor;
+      plano.conclusaoPedidos = plano.conclusaoPedidos || plano.silogismo_central.conclusao;
+    }
+    if (plano && plano.bloqueios && !plano.pendencias) {
+      plano.pendencias = plano.bloqueios.map(b => typeof b === 'string' ? b : `${b.bloqueio} (${b.gravidade})`);
+    }
+
     res.json({ success: true, plano });
   } catch (err) {
     console.error('[planejar error]:', err);

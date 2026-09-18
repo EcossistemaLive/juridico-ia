@@ -11,7 +11,7 @@ export const SCHEMA_PLANO_PECA = {
     type: "object",
     properties: {
         tipo_peca: { type: "string", description: "Identificador do tipo de peça escolhido" },
-        endereçamento_proposto: { type: "string", description: "Juízo a que a peça será dirigida, com a justificativa da competência" },
+        enderecamento_proposto: { type: "string", description: "Juízo a que a peça será dirigida, com a justificativa da competência" },
 
         silogismo_central: {
             type: "object",
@@ -153,7 +153,7 @@ export const SCHEMA_PLANO_PECA = {
     },
     required: [
         "tipo_peca",
-        "endereçamento_proposto",
+        "enderecamento_proposto",
         "silogismo_central",
         "teses",
         "cobertura_elementos",
