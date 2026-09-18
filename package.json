@@ -13,12 +13,19 @@
         "rules:deploy": "firebase deploy --only firestore:rules"
     },
     "dependencies": {
+        "@anthropic-ai/sdk": "^0.127.0",
+        "cors": "^2.8.6",
         "docx": "^9.5.1",
+        "dotenv": "^18.0.0",
+        "express": "^5.2.1",
         "firebase": "^11.2.0",
+        "firebase-admin": "^14.4.0",
         "lucide-react": "^0.473.0",
+        "mammoth": "^1.12.3",
         "next": "^15.3.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
+        "zod": "^4.6.5",
         "zustand": "^5.0.11"
     },
     "devDependencies": {

@@ -51,3 +51,5 @@ Thumbs.db
 
 # agentes
 .agent/
+cloudflared.exe
+

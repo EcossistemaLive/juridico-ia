@@ -19,13 +19,17 @@ import { getFirestore } from "firebase-admin/firestore";
 function app() {
     if (getApps().length) return getApps()[0];
 
-    // Dentro das functions, initializeApp() sem argumento já resolve as credenciais.
-    // Em execução local, applicationDefault() lê GOOGLE_APPLICATION_CREDENTIALS.
-    return initializeApp(
-        process.env.FUNCTIONS_EMULATOR || process.env.K_SERVICE
-            ? undefined
-            : { credential: applicationDefault() }
-    );
+    if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        try {
+            return initializeApp({ credential: applicationDefault() });
+        } catch (e) {
+            console.warn("[firebase-admin] Falha ao carregar applicationDefault, usando fallback por projectId:", e.message);
+        }
+    }
+
+    return initializeApp({ 
+        projectId: process.env.FIREBASE_PROJECT_ID || "daily-catholic-meditation" 
+    });
 }
 
 export function adminAuth() {

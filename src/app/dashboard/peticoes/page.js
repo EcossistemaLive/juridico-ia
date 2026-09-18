@@ -78,6 +78,7 @@ export default function PeticoesPage() {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       const res = await planejarPeca({
         casoId: casoAtivo.id,
+        caso: casoAtivo,
         escritorioId,
         area,
         tipoPeca: tipo.nome
@@ -103,6 +104,7 @@ export default function PeticoesPage() {
       const tipo = TIPOS_PECA.find(t => t.id === tipoPeca);
       await redigirPeca({
         casoId: casoAtivo.id,
+        caso: casoAtivo,
         plano,
         escritorioId,
         area,
@@ -125,6 +127,7 @@ export default function PeticoesPage() {
         area,
         tipoPeca: tipo.nome,
         casoId: casoAtivo?.id,
+        caso: casoAtivo,
         escritorioId
       });
       setRevisao(res);
